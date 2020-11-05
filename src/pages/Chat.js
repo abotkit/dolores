@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useHistory } from 'react-router-dom';
 import { Breadcrumb, Input, Button } from 'antd';
-import { BorderTopOutlined, MessageOutlined } from '@ant-design/icons';
+import { MessageOutlined } from '@ant-design/icons';
 import Smartphone from '../components/Chat/Smartphone';
 import axios from 'axios';
 import { useTranslation } from "react-i18next";
@@ -127,8 +127,9 @@ const Chat = () => {
         });
     }, [history, bot, settings]);
 
-    let answer = (data) => {
+    const answer = data => {
         for (const message of data) {
+            console.log(message)
             setTimeout(() => {
                 messages.current = [...messages.current, {
                     text: message.text,
@@ -156,7 +157,7 @@ const Chat = () => {
         }
         messages.current = [...messages.current.filter(message => message.type !== 'buttons'), { text: text, issuer: t('chat.issuer.human'), type: 'text', time: moment().locale(i18n.languages[0]).format('YYYY-MM-DD HH:mm:ss') }];
         try {
-            const response = await axios.post(`${settings.botkit.host}:${settings.botkit.port}/bot/handle`, { query: text, bot_name: bot, identifier: chatIdentifier });
+            const response = await axios.post(`${settings.botkit.host}:${settings.botkit.port}/handle`, { query: text, bot: bot, identifier: chatIdentifier });
             answer(response.data);
         } catch (error) {
             console.warn('abotkit rest api is not available', error);
@@ -170,7 +171,7 @@ const Chat = () => {
     const sendPredefinedMessage = async (title, message) => {
         messages.current = [...messages.current.filter(message => message.type !== 'buttons'), { text: title, issuer: t('chat.issuer.human'), type: 'text', time: moment().locale(i18n.languages[0]).format('YYYY-MM-DD HH:mm:ss') }];
         try {
-            const response = await axios.post(`${settings.botkit.host}:${settings.botkit.port}/bot/handle`, { query: message, bot_name: bot, identifier: chatIdentifier });
+            const response = await axios.post(`${settings.botkit.host}:${settings.botkit.port}/handle`, { query: message, bot: bot, identifier: chatIdentifier });
             answer(response.data);
         } catch (error) {
             console.warn('abotkit rest api is not available', error);
@@ -202,6 +203,8 @@ const Chat = () => {
                                         message.buttons.map(button => <Button style={{ marginRight: 6, marginBottom: 6 }} shape="round" type="primary" ghost onClick={() => sendPredefinedMessage(button.title, button.payload)} >{button.title}</Button>)
                                     }
                                 </div>
+                            } else {
+                                return null
                             }
                         })}
                     </div>
