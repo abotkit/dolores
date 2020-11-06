@@ -78,8 +78,6 @@ const Intents = () => {
       for (const intent of intents) {
         intent.examples = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/intent/${intent.name}/bot/${bot}/examples`)).data;
       }
-
-      console.log(intents);
       
       setIntents(intents);
       setIntentPhrases(phrases);
@@ -151,7 +149,7 @@ const Intents = () => {
 
   const addNewExample = async intent => {
     try {
-      await axios.post(`${settings.botkit.host}:${settings.botkit.port}/example`, { intent: intents[intent].name, example: newExampleTexts[intent] });
+      await axios.post(`${settings.botkit.host}:${settings.botkit.port}/example`, { bot: bot, intent: intents[intent].name, example: newExampleTexts[intent] });
     } catch (error) {
       showNotification('Couldn\'t add example', error.message);
       return;
@@ -161,7 +159,7 @@ const Intents = () => {
   }
 
   const removeExampleFromIntent = async example => {
-    await axios.delete(`${settings.botkit.host}:${settings.botkit.port}/example`, { data: { example: example } });
+    await axios.delete(`${settings.botkit.host}:${settings.botkit.port}/example`, { data: {bot: bot, example: example } });
     fetchIntents();
   }
 
