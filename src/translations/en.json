@@ -58,6 +58,12 @@
         "online": "online",
         "offline": "offline",
         "running": "is running at:"
+      },
+      "translation": {
+        "error": {
+          "title": "Language update failed",
+          "message": "It was not possible to update the language of {{bot}}. Please check your connection."
+        }
       }  
     },
     "actions": {

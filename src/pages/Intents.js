@@ -74,11 +74,13 @@ const Intents = () => {
   const fetchIntents = useCallback(async () => {
     try {
       const intents = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/intents`)).data;
-      const phrases = {};
+      const phrases = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/phrases`)).data;
       for (const intent of intents) {
-        intent.examples = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/intent/${intent.name}/examples`)).data;
-        phrases[intent.name] = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/intent/${intent.name}/phrases`)).data;
+        intent.examples = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/intent/${intent.name}/bot/${bot}/examples`)).data;
       }
+
+      console.log(intents);
+      
       setIntents(intents);
       setIntentPhrases(phrases);
       setSelectedActions(intents.map(intent => intent.action));
@@ -280,7 +282,7 @@ const Intents = () => {
               <Button className={classes.button} onClick={() => addNewExample(key)} type="primary" shape="circle" icon={<PlusOutlined />} />
             </div>
 
-            { intent.examples.map((example, key) => <div key={ key } className={classes.example}><CloseCircleOutlined onClick={() => removeExampleFromIntent(example.text)} /><span>{ example.text }</span></div>) }
+            { intent.examples.map((example, key) => <div key={ key } className={classes.example}><CloseCircleOutlined onClick={() => removeExampleFromIntent(example)} /><span>{ example }</span></div>) }
           </Panel>
         )}
       </Collapse> : null }

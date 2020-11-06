@@ -58,6 +58,12 @@
         "online": "online",
         "offline": "offline",
         "running": "ist erreichbar unter:"
+      },
+      "translation": {
+        "error": {
+          "title": "Änderung der Sprache fehlgeschlagen",
+          "message": "Die Sprache von {{bot}} konnte nicht geändert werden. Bitte überprüfe deine Internetverbindung."
+        }
       }  
     },
     "actions": {

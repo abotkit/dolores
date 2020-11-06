@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useHistory } from 'react-router-dom';
 import { Breadcrumb, Input, Button } from 'antd';
@@ -17,7 +17,6 @@ const useStyle = createUseStyles({
     display: {
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
         backgroundImage: 'url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png")'
     },
     messages: {
@@ -116,6 +115,24 @@ const Chat = () => {
     const classes = useStyle();
     const messagebox = useRef();
 
+    const isMobileDevice = () => {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        return width < 700 || height < 700;
+    }
+
+    const [displaySmartphone, setDisplaySmartphone] = useState(!isMobileDevice());
+    const handleWindowSizeChange = useCallback(() => {
+        setDisplaySmartphone(!isMobileDevice())
+    }, []);
+
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowSizeChange);
+        return () => {
+            window.removeEventListener('resize', handleWindowSizeChange);
+        }
+    }, [handleWindowSizeChange]);
+
 
     useEffect(() => {
         axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/status`).catch(error => {
@@ -180,6 +197,34 @@ const Chat = () => {
         messagebox.current.scrollTop = messagebox.current.scrollHeight;
     }
 
+    const content = (<div className={classes.display} style={{height: displaySmartphone ? '100%' : 'calc(100vh - 22px - 64px - 70px)'}}>
+        <div ref={messagebox} className={classes.messages}>
+            {messages.current.map((message, i) => {
+                if (message.type === 'text') {
+                    return <div key={i} className={`${classes.message} ${message.issuer === bot ? classes.bot : classes.human}`}>
+                        <p>{message.text}</p>
+                        <span>{moment().locale(i18n.languages[0]).format('HH:mm')}</span>
+                    </div>
+                } else if (message.type === 'buttons') {
+                    return <div key={i} className={classes.message} style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                        {
+                            message.buttons.map(button => <Button style={{ marginRight: 6, marginBottom: 6 }} shape="round" type="primary" ghost onClick={() => sendPredefinedMessage(button.title, button.payload)} >{button.title}</Button>)
+                        }
+                    </div>
+                } else {
+                    return null
+                }
+            })}
+        </div>
+        <Input
+            className={classes.input}
+            value={text}
+            onPressEnter={sendMessage}
+            onChange={e => setText(e.target.value)}
+            placeholder={t("chat.input.placeholder")}
+            suffix={<MessageOutlined onClick={sendMessage} />} />
+    </div>)
+
     return (
         <>
             <Breadcrumb style={{ margin: "16px 0" }}>
@@ -188,35 +233,7 @@ const Chat = () => {
                 <Breadcrumb.Item>{bot}</Breadcrumb.Item>
             </Breadcrumb>
 
-            <Smartphone>
-                <div className={classes.display} >
-                    <div ref={messagebox} className={classes.messages}>
-                        {messages.current.map((message, i) => {
-                            if (message.type === 'text') {
-                                return <div key={i} className={`${classes.message} ${message.issuer === bot ? classes.bot : classes.human}`}>
-                                    <p>{message.text}</p>
-                                    <span>{moment().locale(i18n.languages[0]).format('HH:mm')}</span>
-                                </div>
-                            } else if (message.type === 'buttons') {
-                                return <div key={i} className={classes.message} style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                                    {
-                                        message.buttons.map(button => <Button style={{ marginRight: 6, marginBottom: 6 }} shape="round" type="primary" ghost onClick={() => sendPredefinedMessage(button.title, button.payload)} >{button.title}</Button>)
-                                    }
-                                </div>
-                            } else {
-                                return null
-                            }
-                        })}
-                    </div>
-                    <Input
-                        className={classes.input}
-                        value={text}
-                        onPressEnter={sendMessage}
-                        onChange={e => setText(e.target.value)}
-                        placeholder={t("chat.input.placeholder")}
-                        suffix={<MessageOutlined onClick={sendMessage} />} />
-                </div>
-            </Smartphone>
+            { displaySmartphone ? <Smartphone>{ content }</Smartphone> : content }
         </>
     );
 };
