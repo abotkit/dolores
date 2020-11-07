@@ -200,7 +200,7 @@ const Intents = () => {
 
   const addNewPhrase = async intent => {
     try {
-      await axios.post(`${settings.botkit.host}:${settings.botkit.port}/phrases`, { bot_name: bot, phrases: [{ intentName: intents[intent].name, intentId: intents[intent].id, text: newPhrases[intent] }]});
+      await axios.post(`${settings.botkit.host}:${settings.botkit.port}/phrases`, { bot: bot, phrases: [{ intent: intents[intent].name, text: newPhrases[intent] }]});
     } catch (error) {
       showNotification('Couldn\'t add phrase', error.message);
       return;
@@ -212,7 +212,7 @@ const Intents = () => {
   const removeIntentPhrase = async (event, intent, phrase) => {
     event.preventDefault();
     try {
-      await axios.delete(`${settings.botkit.host}:${settings.botkit.port}/phrase`, { data: { intentName: intent.name, intentId: intent.id, phrase: phrase.text }});
+      await axios.delete(`${settings.botkit.host}:${settings.botkit.port}/phrase`, { data: { bot: bot, intentName: intent.name, intentId: intent.id, phrase: phrase }});
     } catch (error) {
       showNotification('Couldn\'t add phrase', error.message);
       return;
@@ -263,15 +263,15 @@ const Intents = () => {
           <Panel header={ intent.name } key={ key }>
             <h3>{ t('intents.collapse.action') }</h3>
             <Select value={selectedActions[key]} onChange={value => selectAction(key, value)} style={{ marginBottom: 12, minWidth: 200 }}>
-              { actions.map((action, key) => <Option key={ key } value={ action.id }>{ action.name }</Option>) }
+              { actions.map((action, key) => <Option key={ action.name } value={ action.id }>{ action.name }</Option>) }
             </Select>
-            { typeof selectedActions[key] !== 'undefined' && typeof actions[selectedActions[key] -  1] !== 'undefined' && actions[selectedActions[key] -  1].name === 'Talk' ? <>
+            { typeof selectedActions[key] !== 'undefined' && selectedActions[key] === 'Talk' ? <>
               <div className={classes.input}>
                 <span className={classes.label}>{ t('intents.collapse.answer') }:</span><Input value={newPhrases[key]} onChange={({ target: { value } }) => setNewPhrase(key, value)} placeholder={ t('intents.collapse.answer-placeholder') } />
                 <Button className={classes.button} onClick={() => addNewPhrase(key)} type="primary" shape="circle" icon={<PlusOutlined />} />
               </div>
               <div>
-                { typeof intentPhrases[intent.name] === 'undefined' ? null : intentPhrases[intent.name].map((phrase, index) => <Tag key={index} closable onClose={event => removeIntentPhrase(event, intent, phrase)}>{ phrase.text }</Tag>)}
+                { typeof intentPhrases[intent.name] === 'undefined' ? null : intentPhrases[intent.name].map((phrase, index) => <Tag key={index} closable onClose={event => removeIntentPhrase(event, intent, phrase)}>{ phrase }</Tag>)}
               </div>
         </> : null}
             <h3>{ t('intents.collapse.examples') }</h3>

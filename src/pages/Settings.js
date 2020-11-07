@@ -43,7 +43,7 @@ const Settings = () => {
 
   const changeBotLanguage = async value => {
     try {
-      await axios.post(`${settings.botkit.host}:${settings.botkit.port}/bot/language`, { "bot_name": "Default Bot", "language": value });
+      await axios.post(`${settings.botkit.host}:${settings.botkit.port}/language`, { bot: bot, country_code: value });
       setBotLanguage(value);
     } catch (error) {
       showNotification(t('settings.translation.error.title'), t('settings.translation.error.message', { bot: bot }));
