@@ -2,11 +2,19 @@ import React from 'react';
 
 const maveUrl = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_ABOTKIT_MAEVE_URL : window.ABOTKIT_MAEVE_URL;
 const mavePort = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_ABOTKIT_MAEVE_PORT : window.ABOTKIT_MAEVE_PORT;
+const keycloakEnabled = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_ABOTKIT_DOLORES_USE_KEYCLOAK : window.ABOTKIT_DOLORES_USE_KEYCLOAK;
+const keycloakUrl = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_ABOTKIT_DOLORES_KEYCLOAK_URL : window.ABOTKIT_DOLORES_KEYCLOAK_URL;
+const keycloakPort = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_ABOTKIT_DOLORES_KEYCLOAK_PORT : window.ABOTKIT_DOLORES_KEYCLOAK_PORT;
 
 const settings = {
   botkit: {
     host: maveUrl || 'http://localhost',
-    port: mavePort || 3000
+    port: mavePort || 3000,
+    keycloak: {
+      enabled: typeof keycloakEnabled !== 'undefined' && keycloakEnabled.toLowerCase() === 'true',
+      url: keycloakUrl,
+      port: keycloakPort
+    }
   },
   colors: {
     primary: '#002F53',
