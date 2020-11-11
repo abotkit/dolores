@@ -6,6 +6,7 @@ import axios from 'axios';
 import { createUseStyles } from 'react-jss';
 import { useTranslation } from "react-i18next";
 import SettingsContext from '../SettingsContext';
+import { useKeycloak } from '@react-keycloak/web';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -70,6 +71,7 @@ const Intents = () => {
   const [newExampleTexts, setNewExampleTexts] = useState([]);
   const [intentPhrases, setIntentPhrases] = useState({});
   const [newPhrases, setNewPhrases] = useState([]);
+  const { keycloak } = useKeycloak();
 
   const fetchIntents = useCallback(async () => {
     try {
@@ -120,6 +122,23 @@ const Intents = () => {
       }
     });
   }, [fetchIntents, history, bot, settings]);
+
+  const breadcrumbs = (
+    <Breadcrumb style={{ margin: '16px 0' }}>
+      <Breadcrumb.Item>{ t('intents.breadcrumbs.home') }</Breadcrumb.Item>
+      <Breadcrumb.Item>{ t('intents.breadcrumbs.intents') }</Breadcrumb.Item>
+    </Breadcrumb>
+  );
+
+  if (!keycloak.authenticated && settings.botkit.keycloak.enabled) {
+    return (
+      <>
+        { breadcrumbs }
+        <h3>{`Sorry, but you need to login to see the intent page of ${bot}`}</h3>
+      </>
+    );
+  }
+  console.log(keycloak.tokenParsed.sub)
 
   const removeExample = (event, text) => {
     event.preventDefault();
@@ -251,10 +270,7 @@ const Intents = () => {
 
   return (
     <>
-      <Breadcrumb style={{ margin: '16px 0' }}>
-        <Breadcrumb.Item>{ t('intents.breadcrumbs.home') }</Breadcrumb.Item>
-        <Breadcrumb.Item>{ t('intents.breadcrumbs.intents') }</Breadcrumb.Item>
-      </Breadcrumb>
+      { breadcrumbs }
       <h1>{ t('intents.headline') }</h1>
       <Button onClick={() => setVisible(true)} type="primary" shape="round" icon={<PlusOutlined />}>{ t('intents.add') }</Button>
 

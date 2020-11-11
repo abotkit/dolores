@@ -4,6 +4,7 @@ import { Breadcrumb, Card } from 'antd';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import SettingsContext from '../SettingsContext';
+import { useKeycloak } from '@react-keycloak/web';
 
 const Actions = () => {
   const { bot } = useParams();
@@ -11,6 +12,7 @@ const Actions = () => {
   const history = useHistory();
   const { t } = useTranslation();
   const settings = useContext(SettingsContext);
+  const { keycloak } = useKeycloak();
 
   useEffect(() => {
     axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/status`).then(() => {
@@ -28,12 +30,25 @@ const Actions = () => {
     });    
   }, [bot, history, settings]);
 
+  const breadcrumbs = (
+    <Breadcrumb style={{ margin: '16px 0' }}>
+      <Breadcrumb.Item>{ t('actions.breadcrumbs.home') }</Breadcrumb.Item>
+      <Breadcrumb.Item>{ t('actions.breadcrumbs.actions') }</Breadcrumb.Item>
+    </Breadcrumb>
+  )
+
+  if (!keycloak.authenticated && settings.botkit.keycloak.enabled) {
+    return (
+      <>
+        { breadcrumbs }
+        <h3>{`Sorry, but you need to login to see the actions page of ${bot}`}</h3>
+      </>
+    );
+  }
+
   return (
     <>
-      <Breadcrumb style={{ margin: '16px 0' }}>
-        <Breadcrumb.Item>{ t('actions.breadcrumbs.home') }</Breadcrumb.Item>
-        <Breadcrumb.Item>{ t('actions.breadcrumbs.actions') }</Breadcrumb.Item>
-      </Breadcrumb>
+      { breadcrumbs }
       <h1>{ t('actions.headline') }</h1>
       { actions.map((action, i) => {
         let title = <div>{action.name}</div>

@@ -57,14 +57,22 @@
         "state": "Bot state",
         "online": "online",
         "offline": "offline",
-        "running": "is running at:"
+        "running": "is running at:",
+        "title": "The bot",
+        "using": "is using",
+        "chatting": "for chatting"
       },
       "translation": {
         "error": {
           "title": "Language update failed",
           "message": "It was not possible to update the language of {{bot}}. Please check your connection."
         }
-      }  
+      },
+      "language": {
+        "current": "is currently speaking",
+        "de": "German",
+        "en": "English"
+      }
     },
     "actions": {
       "breadcrumbs": {

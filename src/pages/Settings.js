@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { Breadcrumb, Tag, notification } from 'antd';
-import axios from 'axios';
 import { Select } from 'antd';
 import { useTranslation } from "react-i18next";
 import { createUseStyles } from 'react-jss';
 import SettingsContext from '../SettingsContext';
+import { useKeycloak } from '@react-keycloak/web';
+import { axios } from '../utils';
 
 const useStyles = createUseStyles({
   headline: {
@@ -26,6 +27,7 @@ const Settings = () => {
   const { t, i18n } = useTranslation();
   const classes = useStyles();
   const settings = useContext(SettingsContext);
+  const { keycloak } = useKeycloak();
 
   const [language, setLanguage] = useState(i18n.languages[0].substring(0,2).toLocaleLowerCase());
   
@@ -71,12 +73,34 @@ const Settings = () => {
     })      
   }, [bot, history, settings]);
 
+  const breadcrumbs = (
+    <Breadcrumb style={{ margin: '16px 0' }}>
+      <Breadcrumb.Item>{ t('settings.breadcrumbs.home') }</Breadcrumb.Item>
+      <Breadcrumb.Item>{ t('settings.breadcrumbs.settings')}</Breadcrumb.Item>
+    </Breadcrumb>
+  );
+
+  let languageOptions = (
+    <>
+      <p>{bot} {t('settings.language.current')}</p>
+      <Select
+        value={botLangauge}
+        style={{ width: 200 }}
+        onChange={changeBotLanguage}
+      >
+        <Option value="en">English</Option>
+        <Option value="de">Deutsch</Option>
+      </Select>
+    </>
+  );
+  
+  if (!keycloak.authenticated && settings.botkit.keycloak.enabled) {
+    languageOptions = <p>{bot} {t('settings.language.current')} {t(`settings.language.${botLangauge}`)}</p>
+  }
+
   return (
     <>
-      <Breadcrumb style={{ margin: '16px 0' }}>
-        <Breadcrumb.Item>{ t('settings.breadcrumbs.home') }</Breadcrumb.Item>
-        <Breadcrumb.Item>{ t('settings.breadcrumbs.settings')}</Breadcrumb.Item>
-      </Breadcrumb>
+      { breadcrumbs }
       <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
         <h3 className={classes.headline}>{ t('settings.general.headline') }</h3>
         <Select
@@ -90,18 +114,10 @@ const Settings = () => {
         </Select>
         <h3 className={classes.headline} style={{ paddingTop: 16 }}>{ t('settings.bot.headline') }</h3>
         <p>{ t('settings.bot.state') }: { botAlive ? <Tag color="green">{ t('settings.bot.online') }</Tag> : <Tag color="red">{ t('settings.bot.offline') }</Tag> }</p>
-        { host !== '' ? <p>{bot} { t('settings.bot.running') } {host}:{port}</p> : null}
-        { botAlive ? <p>Your bot is using <b>{botType === 'abotkit' ? 'abotkit-core-bot' : botType}</b> for chatting</p> : null}
+        { host !== '' ? <p>{t('settings.bot.title')} { t('settings.bot.running') } {host}:{port}</p> : null}
+        { botAlive && botType !== '' ? <p>{bot} {t('settings.bot.using')} <b>{botType === 'robert' ? 'abotkit-core' : 'rasa'}</b> {t('settings.bot.chatting')}</p> : null}
         { botAlive ? <>
-          <p>{bot} is currently speaking</p>
-          <Select
-            value={botLangauge}
-            style={{ width: 200 }}
-            onChange={changeBotLanguage}
-          >
-            <Option value="en">English</Option>
-            <Option value="de">Deutsch</Option>
-          </Select></> 
+          {languageOptions}</> 
         : null }
       </div>
     </>
