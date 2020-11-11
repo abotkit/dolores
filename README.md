@@ -17,7 +17,7 @@ node dolores.js
 
 # environment variables
 
-(Use REACT_APP prefix in development - see .env.development file)
+:exclamation: Use REACT_APP prefix in development - see [.env.development](.env.development) file :exclamation:
 
 |         name        |        description             |    default                          |
 |---------------------|--------------------------------|-------------------------------------|
