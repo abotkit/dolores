@@ -27,3 +27,5 @@ node dolores.js
 | ABOTKIT_DOLORES_USE_KEYCLOAK | use keycloak as security mechanism | 'false' |
 | ABOTKIT_DOLORES_KEYCLOAK_URL | host of a running keycloak instance | 'http://localhost' |
 | ABOTKIT_DOLORES_KEYCLOAK_PORT | port of a running keycloak instance | '8080' |
+| ABOTKIT_DOLORES_KEYCLOAK_CLIENT_ID | your keycloak abotkit client id | 'abotkit-local' |
+| ABOTKIT_DOLORES_KEYCLOAK_REALM | the keycloak abotkit realm | 'abotkit' |

@@ -6,6 +6,10 @@ const keycloakEnabled = process.env.NODE_ENV === 'development' ? process.env.REA
 const keycloakUrl = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_ABOTKIT_DOLORES_KEYCLOAK_URL : window.ABOTKIT_DOLORES_KEYCLOAK_URL;
 const keycloakPort = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_ABOTKIT_DOLORES_KEYCLOAK_PORT : window.ABOTKIT_DOLORES_KEYCLOAK_PORT;
 
+const keycloakClientId = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_ABOTKIT_DOLORES_KEYCLOAK_CLIENT_ID : window.ABOTKIT_DOLORES_KEYCLOAK_CLIENT_ID;
+const keycloakRealm = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_ABOTKIT_DOLORES_KEYCLOAK_REALM : window.ABOTKIT_DOLORES_KEYCLOAK_REALM;
+
+
 const settings = {
   botkit: {
     host: maveUrl || 'http://localhost',
@@ -13,7 +17,9 @@ const settings = {
     keycloak: {
       enabled: typeof keycloakEnabled !== 'undefined' && keycloakEnabled.toLowerCase() === 'true',
       url: keycloakUrl,
-      port: keycloakPort
+      port: keycloakPort,
+      realm: keycloakRealm,
+      clientId: keycloakClientId
     }
   },
   colors: {

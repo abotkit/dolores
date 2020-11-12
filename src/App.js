@@ -61,9 +61,9 @@ const App = () => {
 
   if (settings.botkit.keycloak.enabled) {
     const keycloak = Keycloak({
-      url: 'http://localhost:8080/auth',
-      realm: 'abotkit',
-      clientId: 'dolores-local',
+      url: `${settings.botkit.keycloak.url}:${settings.botkit.keycloak.port}/auth`,
+      realm: settings.botkit.keycloak.realm,
+      clientId: settings.botkit.keycloak.clientId,
     });
 
     return <ReactKeycloakProvider authClient={keycloak}>{ main }</ReactKeycloakProvider>;
