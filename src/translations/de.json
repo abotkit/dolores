@@ -90,6 +90,9 @@
         "home": "Startseite",
         "intents": "Vorhaben"
       },
+      "loading": {
+        "tip": "Vorgänge werden geladen..."
+      },
       "headline": "Vorhaben",
       "add": "Vorhaben hinzufügen",
       "collapse": {

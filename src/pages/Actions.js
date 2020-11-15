@@ -1,33 +1,46 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { Breadcrumb, Card } from 'antd';
-import axios from 'axios';
+import { axios } from '../utils';
+import Axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import SettingsContext from '../SettingsContext';
-import { useKeycloak } from '@react-keycloak/web';
+import { SettingsContext } from '../SettingsContext';
 
 const Actions = () => {
   const { bot } = useParams();
   const [actions, setActions] = useState([]);
   const history = useHistory();
   const { t } = useTranslation();
-  const settings = useContext(SettingsContext);
-  const { keycloak } = useKeycloak();
+  const [settings] = useContext(SettingsContext);
+
+  const CancelToken = useRef(Axios.CancelToken);
+  const source = useRef(CancelToken.current.source());
 
   useEffect(() => {
-    axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/status`).then(() => {
-      axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/actions`).then(response => {
+    const axiosSource = source.current;
+    axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/status`, {
+      cancelToken: axiosSource.token
+    }).then(() => {
+      axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/actions`, {
+        cancelToken: axiosSource.token
+      }).then(response => {
         setActions(response.data);
       }).catch(error => {
-        console.warn('abotkit rest api is not available', error);
+        if (!Axios.isCancel(error)) {
+          console.warn('abotkit rest api is not available', error);
+        }
       })
     }).catch(error => {
       if (typeof error.response !== 'undefined' && error.response.status === 404) {
         history.push('/not-found');
-      } else {
+      } else if (!Axios.isCancel(error)) {
         console.warn('abotkit rest api is not available', error);
       }
-    });    
+    });   
+
+    return () => {
+      axiosSource.cancel();
+    }
   }, [bot, history, settings]);
 
   const breadcrumbs = (
@@ -37,7 +50,7 @@ const Actions = () => {
     </Breadcrumb>
   )
 
-  if (!keycloak.authenticated && settings.botkit.keycloak.enabled) {
+  if (settings.keycloak.enabled && !settings.keycloak.instance.authenticated) {
     return (
       <>
         { breadcrumbs }

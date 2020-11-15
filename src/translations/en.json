@@ -90,6 +90,9 @@
         "home": "Home",
         "intents": "Intents"
       },
+      "loading": {
+        "tip": "Loading intents..."
+      },
       "headline": "Intents",
       "add": "Add intent",
       "collapse": {

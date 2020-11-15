@@ -14,21 +14,23 @@ const settings = {
   botkit: {
     host: maveUrl || 'http://localhost',
     port: mavePort || 3000,
-    keycloak: {
-      enabled: typeof keycloakEnabled !== 'undefined' && keycloakEnabled.toLowerCase() === 'true',
-      url: keycloakUrl,
-      port: keycloakPort,
-      realm: keycloakRealm,
-      clientId: keycloakClientId
-    }
+  },
+  keycloak: {
+    enabled: typeof keycloakEnabled !== 'undefined' && keycloakEnabled.toLowerCase() === 'true',
+    url: keycloakUrl,
+    port: keycloakPort,
+    realm: keycloakRealm,
+    clientId: keycloakClientId,
+    instance: null,
+    loading: typeof keycloakEnabled !== 'undefined' && keycloakEnabled.toLowerCase() === 'true'
   },
   colors: {
     primary: '#002F53',
     secondary: '#2D999F',
     accent: '#F25D50'
-  }
+  } 
 }
 
-const settingsContext = React.createContext(settings);
+const SettingsContext = React.createContext([settings, () => {}]);
 
-export default settingsContext;
+export { SettingsContext, settings as defaultSettings }

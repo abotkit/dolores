@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { Breadcrumb, Tag, notification } from 'antd';
 import { Select } from 'antd';
 import { useTranslation } from "react-i18next";
 import { createUseStyles } from 'react-jss';
-import SettingsContext from '../SettingsContext';
-import { useKeycloak } from '@react-keycloak/web';
+import { SettingsContext } from '../SettingsContext';
 import { axios } from '../utils';
+import Axios from 'axios';
 
 const useStyles = createUseStyles({
   headline: {
@@ -26,11 +26,13 @@ const Settings = () => {
   const [port, setPort] = useState('');
   const { t, i18n } = useTranslation();
   const classes = useStyles();
-  const settings = useContext(SettingsContext);
-  const { keycloak } = useKeycloak();
+  const [settings] = useContext(SettingsContext);
 
   const [language, setLanguage] = useState(i18n.languages[0].substring(0,2).toLocaleLowerCase());
   
+  const CancelToken = useRef(Axios.CancelToken);
+  const source = useRef(CancelToken.current.source());
+
   const changeLanguage = value => {
     setLanguage(value);
     i18n.changeLanguage(value);
@@ -53,24 +55,35 @@ const Settings = () => {
   }
 
   useEffect(() => {
-    axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/status`).then(response => {
+    const axiosSource = source.current;
+    axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/status`, {
+      cancelToken: axiosSource.token
+    }).then(response => {
       setbotAlive(true);
-      axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/settings`).then(response => {
+      axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/settings`, {
+        cancelToken: axiosSource.token
+      }).then(response => {
         const { host, port, type, language } = response.data;
         setHost(host);
         setPort(port);
         setBotLanguage(language);
         setBotType(type);
       }).catch(error => {
-        console.warn('unable to fetch bot settings', error);
+        if (!Axios.isCancel(error)) {
+          console.warn('unable to fetch bot settings', error);
+        }
       });
     }).catch(error => {
       if (typeof error.response !== 'undefined' && error.response.status === 404) {
         history.push('/not-found');
-      } else {
+      } else if (!Axios.isCancel(error)) {
         console.warn('abotkit rest api is not available', error);
       }
-    })      
+    });
+
+    return () => {
+      axiosSource.cancel();
+    }
   }, [bot, history, settings]);
 
   const breadcrumbs = (
@@ -94,7 +107,7 @@ const Settings = () => {
     </>
   );
   
-  if (!keycloak.authenticated && settings.botkit.keycloak.enabled) {
+  if (settings.keycloak.enabled && !settings.keycloak.instance.authenticated) {
     languageOptions = <p>{bot} {t('settings.language.current')} {t(`settings.language.${botLangauge}`)}</p>
   }
 

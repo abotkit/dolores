@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { notification, Breadcrumb, Collapse, Button, Modal, Input, Select, Tag, Divider } from 'antd';
+import React, { useState, useEffect, useCallback, useContext, useRef } from 'react';
+import { notification, Breadcrumb, Collapse, Button, Modal, Input, Select, Tag, Divider, Spin } from 'antd';
 import { PlusOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useParams, useHistory } from 'react-router-dom';
-import axios from 'axios';
+import { axios } from '../utils';
+import Axios from 'axios';
 import { createUseStyles } from 'react-jss';
 import { useTranslation } from "react-i18next";
-import SettingsContext from '../SettingsContext';
-import { useKeycloak } from '@react-keycloak/web';
+import { SettingsContext } from '../SettingsContext';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -56,7 +56,7 @@ const Intents = () => {
   const { bot } = useParams();
   const history = useHistory();
   const { t } = useTranslation();
-  const settings = useContext(SettingsContext);
+  const [settings] = useContext(SettingsContext);
 
   const [intents, setIntents] = useState([]);
   const [intentName, setIntentName] = useState('');
@@ -71,14 +71,24 @@ const Intents = () => {
   const [newExampleTexts, setNewExampleTexts] = useState([]);
   const [intentPhrases, setIntentPhrases] = useState({});
   const [newPhrases, setNewPhrases] = useState([]);
-  const { keycloak } = useKeycloak();
+  const [loading, setLoading] = useState(false);
+
+  const CancelToken = useRef(Axios.CancelToken);
+  const source = useRef(CancelToken.current.source());
 
   const fetchIntents = useCallback(async () => {
+    setLoading(true);
     try {
-      const intents = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/intents`)).data;
-      const phrases = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/phrases`)).data;
+      const intents = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/intents`, {
+        cancelToken: source.current.token
+      })).data;
+      const phrases = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/phrases`, {
+        cancelToken: source.current.token
+      })).data;
       for (const intent of intents) {
-        intent.examples = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/intent/${intent.name}/bot/${bot}/examples`)).data;
+        intent.examples = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/intent/${intent.name}/bot/${bot}/examples`,{
+          cancelToken: source.current.token
+        })).data;
       }
       
       setIntents(intents);
@@ -87,7 +97,11 @@ const Intents = () => {
       setNewExampleTexts([...Array(intents.length).keys()].map(() => ''))
       setNewPhrases([...Array(intents.length).keys()].map(() => ''))
     } catch (error) {
-      console.warn('abotkit rest api is not available', error);
+      if (!Axios.isCancel(error)) {
+        console.warn('abotkit rest api is not available', error);
+      }
+    } finally {
+      setLoading(false);
     }
   }, [bot, settings]);
 
@@ -99,7 +113,10 @@ const Intents = () => {
   }
 
   useEffect(() => {
-    axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/actions`).then(response => {
+    const axiosSource = source.current;
+    axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/actions`, {
+      cancelToken: axiosSource.token
+    }).then(response => {
       const availableActions = response.data;
     
       setActions(availableActions);
@@ -107,20 +124,33 @@ const Intents = () => {
         setSelectedNewAction(availableActions[0].name)
       }
     }).catch(error => {
-      console.warn('abotkit rest api is not available', error);
+      if (!Axios.isCancel(error)) {
+        console.warn('abotkit rest api is not available', error);
+      }
     });
+
+    return () => {
+      axiosSource.cancel();
+    }
   }, [bot, settings]);
 
   useEffect(() => {
-    axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/status`).then(() => {
+    const axiosSource = source.current;
+    axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/status`, {
+      cancelToken: axiosSource.token
+    }).then(() => {
       fetchIntents();
     }).catch(error => {
       if (typeof error.response !== 'undefined' && error.response.status === 404) {
         history.push('/not-found');
-      } else {
+      } else if (!Axios.isCancel(error)) {
         console.warn('abotkit rest api is not available', error);
       }
     });
+
+    return () => {
+      axiosSource.cancel();
+    }
   }, [fetchIntents, history, bot, settings]);
 
   const breadcrumbs = (
@@ -130,7 +160,7 @@ const Intents = () => {
     </Breadcrumb>
   );
 
-  if (!keycloak.authenticated && settings.botkit.keycloak.enabled) {
+  if (settings.keycloak.enabled && !settings.keycloak.instance.authenticated) {
     return (
       <>
         { breadcrumbs }
@@ -138,7 +168,6 @@ const Intents = () => {
       </>
     );
   }
-  console.log(keycloak.tokenParsed.sub)
 
   const removeExample = (event, text) => {
     event.preventDefault();
@@ -268,69 +297,75 @@ const Intents = () => {
     fetchIntents();
   }
 
+  let content = <><Button onClick={() => setVisible(true)} type="primary" shape="round" icon={<PlusOutlined />}>{ t('intents.add') }</Button>
+    { intents.length > 0 ? <Collapse style={{ marginTop: 16 }} defaultActiveKey={['0']}>
+      { intents.map((intent, key) =>
+        <Panel header={ intent.name } key={ key }>
+          <h3>{ t('intents.collapse.action') }</h3>
+          <Select value={selectedActions[key]} onChange={value => selectAction(key, value)} style={{ marginBottom: 12, minWidth: 200 }}>
+            { actions.map((action, key) => <Option key={ action.name } value={ action.id }>{ action.name }</Option>) }
+          </Select>
+          { typeof selectedActions[key] !== 'undefined' && selectedActions[key] === 'Talk' ? <>
+            <div className={classes.input}>
+              <span className={classes.label}>{ t('intents.collapse.answer') }:</span><Input value={newPhrases[key]} onChange={({ target: { value } }) => setNewPhrase(key, value)} placeholder={ t('intents.collapse.answer-placeholder') } />
+              <Button className={classes.button} onClick={() => addNewPhrase(key)} type="primary" shape="circle" icon={<PlusOutlined />} />
+            </div>
+            <div>
+              { typeof intentPhrases[intent.name] === 'undefined' ? null : intentPhrases[intent.name].map((phrase, index) => <Tag key={index} closable onClose={event => removeIntentPhrase(event, intent, phrase)}>{ phrase }</Tag>)}
+            </div>
+      </> : null}
+          <h3>{ t('intents.collapse.examples') }</h3>
+          <div className={classes.input}>
+            <Input value={newExampleTexts[key]} onPressEnter={() => addNewExample(key)} onChange={({ target: { value } }) => updateNewExampleTexts(key, value)} placeholder={ t('intents.collapse.example-placeholder') } />
+            <Button className={classes.button} onClick={() => addNewExample(key)} type="primary" shape="circle" icon={<PlusOutlined />} />
+          </div>
+
+          { intent.examples.map((example, key) => <div key={ key } className={classes.example}><CloseCircleOutlined onClick={() => removeExampleFromIntent(example)} /><span>{ example }</span></div>) }
+        </Panel>
+      )}
+    </Collapse> : null }
+    <Modal
+      title={ t('intents.add-dialog.headline') }
+      visible={visible}
+      onOk={() => addIntent()}
+      onCancel={closeModal}
+    >
+      <div className={classes.input}>
+        <span className={`${classes.required} ${classes.label}`}>{ t('intents.add-dialog.name') }:</span><Input value={intentName} onChange={({ target: { value } }) => setIntentName(value)} placeholder={ t('intents.add-dialog.name-placeholder') } />
+      </div>
+      <div className={classes.input}>
+        <span className={`${classes.required} ${classes.label}`}>{ t('intents.add-dialog.example') }:</span><Input value={exampleText} onChange={({ target: { value } }) => setExampleText(value)} placeholder={ t('intents.add-dialog.example-placeholder') } />
+        <Button className={classes.button} onClick={addExample} type="primary" shape="circle" icon={<PlusOutlined />} />
+      </div>
+      <div>
+        { examples.map((example, index) => <Tag key={index} closable onClose={event => removeExample(event, example)}>{ example }</Tag>) }
+      </div>
+      <Divider orientation="left">{ t('intents.add-dialog.action') }</Divider>
+      <Select value={selectedNewAction} onChange={ value => setSelectedNewAction(value)} style={{ marginBottom: 12, minWidth: 200 }}>
+        { actions.map((action, key) => <Option key={ key } value={ action.name }>{ action.name }</Option>) }
+      </Select>
+      
+      { selectedNewAction === 'Talk' ? <>
+        <div className={classes.input}>
+          <span className={`${classes.required} ${classes.label}`}>{ t('intents.add-dialog.answer') }:</span><Input value={phraseText} onChange={({ target: { value } }) => setPhraseText(value)} placeholder={ t('intents.add-dialog.answer-placeholder') } />
+          <Button className={classes.button} onClick={addPhrase} type="primary" shape="circle" icon={<PlusOutlined />} />
+        </div>
+        <div>
+          { phrases.map((phrase, index) => <Tag key={index} closable onClose={event => removePhrase(event, phrase)}>{ phrase }</Tag>) }
+        </div>
+      </> : null }
+    </Modal>
+  </>
+
+  if (loading) {
+    content = <Spin tip={ t('intents.loading.tip') } />
+  }
+
   return (
     <>
       { breadcrumbs }
       <h1>{ t('intents.headline') }</h1>
-      <Button onClick={() => setVisible(true)} type="primary" shape="round" icon={<PlusOutlined />}>{ t('intents.add') }</Button>
-
-      { intents.length > 0 ? <Collapse style={{ marginTop: 16 }} defaultActiveKey={['0']}>
-        { intents.map((intent, key) =>
-          <Panel header={ intent.name } key={ key }>
-            <h3>{ t('intents.collapse.action') }</h3>
-            <Select value={selectedActions[key]} onChange={value => selectAction(key, value)} style={{ marginBottom: 12, minWidth: 200 }}>
-              { actions.map((action, key) => <Option key={ action.name } value={ action.id }>{ action.name }</Option>) }
-            </Select>
-            { typeof selectedActions[key] !== 'undefined' && selectedActions[key] === 'Talk' ? <>
-              <div className={classes.input}>
-                <span className={classes.label}>{ t('intents.collapse.answer') }:</span><Input value={newPhrases[key]} onChange={({ target: { value } }) => setNewPhrase(key, value)} placeholder={ t('intents.collapse.answer-placeholder') } />
-                <Button className={classes.button} onClick={() => addNewPhrase(key)} type="primary" shape="circle" icon={<PlusOutlined />} />
-              </div>
-              <div>
-                { typeof intentPhrases[intent.name] === 'undefined' ? null : intentPhrases[intent.name].map((phrase, index) => <Tag key={index} closable onClose={event => removeIntentPhrase(event, intent, phrase)}>{ phrase }</Tag>)}
-              </div>
-        </> : null}
-            <h3>{ t('intents.collapse.examples') }</h3>
-            <div className={classes.input}>
-              <Input value={newExampleTexts[key]} onPressEnter={() => addNewExample(key)} onChange={({ target: { value } }) => updateNewExampleTexts(key, value)} placeholder={ t('intents.collapse.example-placeholder') } />
-              <Button className={classes.button} onClick={() => addNewExample(key)} type="primary" shape="circle" icon={<PlusOutlined />} />
-            </div>
-
-            { intent.examples.map((example, key) => <div key={ key } className={classes.example}><CloseCircleOutlined onClick={() => removeExampleFromIntent(example)} /><span>{ example }</span></div>) }
-          </Panel>
-        )}
-      </Collapse> : null }
-      <Modal
-        title={ t('intents.add-dialog.headline') }
-        visible={visible}
-        onOk={() => addIntent()}
-        onCancel={closeModal}
-      >
-        <div className={classes.input}>
-          <span className={`${classes.required} ${classes.label}`}>{ t('intents.add-dialog.name') }:</span><Input value={intentName} onChange={({ target: { value } }) => setIntentName(value)} placeholder={ t('intents.add-dialog.name-placeholder') } />
-        </div>
-        <div className={classes.input}>
-          <span className={`${classes.required} ${classes.label}`}>{ t('intents.add-dialog.example') }:</span><Input value={exampleText} onChange={({ target: { value } }) => setExampleText(value)} placeholder={ t('intents.add-dialog.example-placeholder') } />
-          <Button className={classes.button} onClick={addExample} type="primary" shape="circle" icon={<PlusOutlined />} />
-        </div>
-        <div>
-          { examples.map((example, index) => <Tag key={index} closable onClose={event => removeExample(event, example)}>{ example }</Tag>) }
-        </div>
-        <Divider orientation="left">{ t('intents.add-dialog.action') }</Divider>
-        <Select value={selectedNewAction} onChange={ value => setSelectedNewAction(value)} style={{ marginBottom: 12, minWidth: 200 }}>
-          { actions.map((action, key) => <Option key={ key } value={ action.name }>{ action.name }</Option>) }
-        </Select>
-        
-        { selectedNewAction === 'Talk' ? <>
-          <div className={classes.input}>
-            <span className={`${classes.required} ${classes.label}`}>{ t('intents.add-dialog.answer') }:</span><Input value={phraseText} onChange={({ target: { value } }) => setPhraseText(value)} placeholder={ t('intents.add-dialog.answer-placeholder') } />
-            <Button className={classes.button} onClick={addPhrase} type="primary" shape="circle" icon={<PlusOutlined />} />
-          </div>
-          <div>
-            { phrases.map((phrase, index) => <Tag key={index} closable onClose={event => removePhrase(event, phrase)}>{ phrase }</Tag>) }
-          </div>
-        </> : null }
-      </Modal>
+      { content }
     </>
   );
 }

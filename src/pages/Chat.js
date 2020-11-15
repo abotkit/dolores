@@ -4,10 +4,10 @@ import { useParams, useHistory } from 'react-router-dom';
 import { Breadcrumb, Input, Button } from 'antd';
 import { MessageOutlined } from '@ant-design/icons';
 import Smartphone from '../components/Chat/Smartphone';
-import axios from 'axios';
+import { axios } from '../utils';
 import { useTranslation } from "react-i18next";
 import moment from 'moment';
-import SettingsContext from '../SettingsContext';
+import { SettingsContext } from '../SettingsContext';
 import 'moment/locale/de';
 import 'moment/locale/en-gb';
 
@@ -109,7 +109,7 @@ const Chat = () => {
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
     const messages = useRef([]);
-    const settings = useContext(SettingsContext);
+    const [settings] = useContext(SettingsContext);
     const [chatIdentifier] = useState(uuidv4());
 
     const classes = useStyle();
