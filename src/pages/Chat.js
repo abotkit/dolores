@@ -155,7 +155,7 @@ const Chat = () => {
                     time: moment().locale(i18n.languages[0]).format("YYYY-MM-DD HH:mm:ss"),
                 }];
 
-                if (typeof message.buttons !== 'undefined') {
+                if (typeof message.buttons !== 'undefined' && message.buttons !== null) {
                     messages.current = [...messages.current, {
                         buttons: message.buttons,
                         type: 'buttons'
