@@ -1,7 +1,7 @@
 # dolores
 dolores is the abotkit react-based ui 
 
-# quickstart
+# Quickstart
 
 ```zsh
 npm i
@@ -15,7 +15,7 @@ npm run build
 node dolores.js
 ```
 
-# environment variables
+# Environment variables
 
 :exclamation: Use REACT_APP prefix in development - see [.env.development](.env.development) file :exclamation:
 
@@ -29,3 +29,7 @@ node dolores.js
 | ABOTKIT_DOLORES_KEYCLOAK_PORT | port of a running keycloak instance | '8080' |
 | ABOTKIT_DOLORES_KEYCLOAK_CLIENT_ID | your keycloak abotkit client id | 'abotkit-local' |
 | ABOTKIT_DOLORES_KEYCLOAK_REALM | the keycloak abotkit realm | 'abotkit' |
+
+# Issues
+
+We use our [main repository](https://github.com/abotkit/abotkit) to track our issues. Please use [this site](https://github.com/abotkit/abotkit/issues) to report an issue. Thanks! :blush:
