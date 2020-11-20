@@ -88,7 +88,7 @@ const Intents = () => {
       for (const intent of intents) {
         intent.examples = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/intent/${intent.name}/bot/${bot}/examples`,{
           cancelToken: source.current.token
-        })).data;
+        })).data.examples;
       }
       
       setIntents(intents);
