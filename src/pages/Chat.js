@@ -146,7 +146,6 @@ const Chat = () => {
 
     const answer = data => {
         for (const message of data) {
-            console.log(message)
             setTimeout(() => {
                 messages.current = [...messages.current, {
                     text: message.text,
@@ -178,7 +177,7 @@ const Chat = () => {
             answer(response.data);
         } catch (error) {
             console.warn('abotkit rest api is not available', error);
-            answer(t('chat.state.offline'));
+            answer([{ text: t('chat.state.offline') }]);
         } finally {
             setText('');
         }
@@ -192,7 +191,7 @@ const Chat = () => {
             answer(response.data);
         } catch (error) {
             console.warn('abotkit rest api is not available', error);
-            answer(t('chat.state.offline'));
+            answer([{ text: t('chat.state.offline') }]);
         }
         messagebox.current.scrollTop = messagebox.current.scrollHeight;
     }
