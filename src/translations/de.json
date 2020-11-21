@@ -4,6 +4,7 @@
       "chat": "Chat",
       "intents": "Vorhaben",
       "actions": "Aktionen",
+      "integrations": "Integrationen",
       "settings": "Einstellungen"
     },
     "about": {
@@ -84,6 +85,29 @@
     "not-found": {
       "text": "Das ist nicht der Druide den Ihr sucht",
       "back": "Zurück"
+    },
+    "integrations": {
+      "breadcrumbs": {
+        "home": "Startseite",
+        "integrations": "Integrationen"
+      },
+      "loading": {
+        "tip": "Integrationen werden geladen..."
+      },
+      "notifications": {
+        "linkToClipboard": "Integrations-Link in Zwischenablage kopiert."
+      },
+      "headline": "Integrationen",
+      "add": "Integration hinzufügen",
+      "add-dialog": {
+        "headline": "Integration hinzufügen",
+        "name": "Name",
+        "name-placeholder": "Name der Integration",
+        "type": "Typ",
+        "url": "URL",
+        "link": "Link",
+        "url-placeholder": "https://your.url.domain/bot"
+      }
     },
     "intents": {
       "breadcrumbs": {

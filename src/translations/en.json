@@ -4,6 +4,7 @@
       "chat": "Chat",
       "intents": "Intents",
       "actions": "Actions",
+      "integrations": "Integrations",
       "settings": "Settings"
     },
     "about": {
@@ -48,7 +49,7 @@
       "breadcrumbs": {
         "home": "Home",
         "settings": "Settings"
-      },    
+      },
       "general": {
         "headline": "General"
       },
@@ -84,6 +85,29 @@
     "not-found": {
       "text": "This isn't the droid you're looking for",
       "back": "Go back"
+    },
+    "integrations": {
+      "breadcrumbs": {
+        "home": "Home",
+        "integrations": "Integrations"
+      },
+      "loading": {
+        "tip": "Loading integrations..."
+      },
+      "notifications": {
+        "linkToClipboard": "Copied integration link to clipboard."
+      },
+      "headline": "Integrations",
+      "add": "Add integrations",
+      "add-dialog": {
+        "headline": "Add integration",
+        "name": "Name",
+        "name-placeholder": "integration name",
+        "type": "Type",
+        "url": "URL",
+        "link": "Link",
+        "url-placeholder": "https://your.url.domain/bot"
+      }
     },
     "intents": {
       "breadcrumbs": {

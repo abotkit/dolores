@@ -21,7 +21,7 @@ const AbotkitMenu = withRouter(props => {
 
   const items = [
     <Menu.Item key={`${url}/chat`}>
-      <Link to={`${url}/chat`}>{ t('menu.chat') }</Link>
+      <Link to={`${url}/chat`}>{t('menu.chat')}</Link>
     </Menu.Item>
   ]
 
@@ -31,10 +31,10 @@ const AbotkitMenu = withRouter(props => {
     const login = () => {
       keycloak.login();
     }
-  
+
     const logout = () => {
       sessionStorage.setItem('maeve-keycloak-token', undefined);
-      sessionStorage.setItem('maeve-keycloak-token-age', undefined); 
+      sessionStorage.setItem('maeve-keycloak-token-age', undefined);
       keycloak.logout();
       history.push(`/${url}/chat`);
     }
@@ -42,47 +42,53 @@ const AbotkitMenu = withRouter(props => {
     if (keycloak && keycloak.authenticated) {
       items.push(
         <Menu.Item key={`${url}/intents`}>
-        <Link to={`${url}/intents`}>{ t('menu.intents') }</Link>
+          <Link to={`${url}/intents`}>{t('menu.intents')}</Link>
         </Menu.Item>,
         <Menu.Item key={`${url}/actions`}>
-          <Link to={`${url}/actions`}>{ t('menu.actions') }</Link>
+          <Link to={`${url}/actions`}>{t('menu.actions')}</Link>
+        </Menu.Item>,
+        <Menu.Item key={`${url}/integrations`}>
+          <Link to={`${url}/integrations`}>{t('menu.integrations')}</Link>
         </Menu.Item>,
         <Menu.Item key={`${url}/settings`}>
-          <Link to={`${url}/settings`}>{ t('menu.settings') }</Link>
+          <Link to={`${url}/settings`}>{t('menu.settings')}</Link>
         </Menu.Item>,
-        <SubMenu key="sub-menu-user" style={{ float: "right"}} icon={<UserOutlined />} title={keycloak.idTokenParsed.preferred_username}>
+        <SubMenu key="sub-menu-user" style={{ float: "right" }} icon={<UserOutlined />} title={keycloak.idTokenParsed.preferred_username}>
           <Menu.Item key="sub-menu-user-logut" onClick={logout}>Logout</Menu.Item>
         </SubMenu>
       )
     } else {
       items.push(
         <Menu.Item key={`${url}/settings`}>
-          <Link to={`${url}/settings`}>{ t('menu.settings') }</Link>
+          <Link to={`${url}/settings`}>{t('menu.settings')}</Link>
         </Menu.Item>,
-        <Menu.Item key="menu-login" onClick={login} style={{ float: "right"}}>Login</Menu.Item>
+        <Menu.Item key="menu-login" onClick={login} style={{ float: "right" }}>Login</Menu.Item>
       );
     }
   } else {
     items.push(
       <Menu.Item key={`${url}/intents`}>
-      <Link to={`${url}/intents`}>{ t('menu.intents') }</Link>
+        <Link to={`${url}/intents`}>{t('menu.intents')}</Link>
       </Menu.Item>,
       <Menu.Item key={`${url}/actions`}>
-        <Link to={`${url}/actions`}>{ t('menu.actions') }</Link>
+        <Link to={`${url}/actions`}>{t('menu.actions')}</Link>
+      </Menu.Item>,
+      <Menu.Item key={`${url}/integrations`}>
+        <Link to={`${url}/integrations`}>{t('menu.integrations')}</Link>
       </Menu.Item>,
       <Menu.Item key={`${url}/settings`}>
-        <Link to={`${url}/settings`}>{ t('menu.settings') }</Link>
+        <Link to={`${url}/settings`}>{t('menu.settings')}</Link>
       </Menu.Item>
     );
   }
 
   return (
-    <Menu 
-    theme="dark"
-    mode="horizontal"
-    style={{ lineHeight: '64px' }}
-    selectedKeys={[location.pathname]}>
-    {items}
+    <Menu
+      theme="dark"
+      mode="horizontal"
+      style={{ lineHeight: '64px' }}
+      selectedKeys={[location.pathname]}>
+      {items}
     </Menu>
   );
 });
