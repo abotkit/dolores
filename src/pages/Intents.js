@@ -86,7 +86,7 @@ const Intents = () => {
         cancelToken: source.current.token
       })).data;
       for (const intent of intents) {
-        intent.examples = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/intent/${intent.name}/bot/${bot}/examples`,{
+        intent.examples = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/intent/${encodeURIComponent(intent.name)}/bot/${bot}/examples`,{
           cancelToken: source.current.token
         })).data.examples;
       }
