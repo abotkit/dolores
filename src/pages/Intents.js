@@ -88,7 +88,7 @@ const Intents = () => {
       for (const intent of intents) {
         intent.examples = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/intent/${encodeURIComponent(intent.name)}/bot/${bot}/examples`,{
           cancelToken: source.current.token
-        })).data.examples;
+        })).data;
       }
       
       setIntents(intents);
@@ -283,7 +283,7 @@ const Intents = () => {
     let response;
 
     try {
-      response = await axios.post(`${settings.botkit.host}:${settings.botkit.port}/intent`, { action_id: actions.find(action => action.name === selectedNewAction).id, bot_name: bot, name: intentName, examples: examples });
+      response = await axios.post(`${settings.botkit.host}:${settings.botkit.port}/intent`, { action_id: actions.find(action => action.name === selectedNewAction).id, bot: bot, name: intentName, examples: examples });
     } catch (error) {
       showNotification('Couldn\'t add intent', error.message);
       return;
@@ -320,7 +320,7 @@ const Intents = () => {
             <Button className={classes.button} onClick={() => addNewExample(key)} type="primary" shape="circle" icon={<PlusOutlined />} />
           </div>
 
-          { intent.examples.map((example, key) => <div key={ key } className={classes.example}><CloseCircleOutlined onClick={() => removeExampleFromIntent(example)} /><span>{ example }</span></div>) }
+          { typeof intent.examples !== 'undefined' && intent.examples.map((example, key) => <div key={ key } className={classes.example}><CloseCircleOutlined onClick={() => removeExampleFromIntent(example)} /><span>{ example }</span></div>) }
         </Panel>
       )}
     </Collapse> : null }
