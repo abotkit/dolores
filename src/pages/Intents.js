@@ -76,8 +76,10 @@ const Intents = () => {
   const CancelToken = useRef(Axios.CancelToken);
   const source = useRef(CancelToken.current.source());
 
-  const fetchIntents = useCallback(async () => {
-    setLoading(true);
+  const fetchIntents = useCallback(async (useLoadingAnimation=false) => {
+    if (useLoadingAnimation) {
+      setLoading(true);
+    }
     try {
       const intents = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/intents`, {
         cancelToken: source.current.token
@@ -139,7 +141,7 @@ const Intents = () => {
     axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/status`, {
       cancelToken: axiosSource.token
     }).then(() => {
-      fetchIntents();
+      fetchIntents(true);
     }).catch(error => {
       if (typeof error.response !== 'undefined' && error.response.status === 404) {
         history.push('/not-found');
@@ -260,7 +262,7 @@ const Intents = () => {
   const removeIntentPhrase = async (event, intent, phrase) => {
     event.preventDefault();
     try {
-      await axios.delete(`${settings.botkit.host}:${settings.botkit.port}/phrase`, { data: { bot: bot, intentName: intent.name, intentId: intent.id, phrase: phrase }});
+      await axios.delete(`${settings.botkit.host}:${settings.botkit.port}/phrase`, { data: { bot: bot, intent: intent.name, phrase: phrase }});
     } catch (error) {
       showNotification('Couldn\'t add phrase', error.message);
       return;
@@ -280,18 +282,15 @@ const Intents = () => {
       return;       
     }
 
-    let response;
-
     try {
-      response = await axios.post(`${settings.botkit.host}:${settings.botkit.port}/intent`, { action_id: actions.find(action => action.name === selectedNewAction).id, bot: bot, name: intentName, examples: examples });
+      await axios.post(`${settings.botkit.host}:${settings.botkit.port}/intent`, { action: selectedNewAction, bot: bot, intent: intentName, examples: examples });
     } catch (error) {
       showNotification('Couldn\'t add intent', error.message);
       return;
     }
 
     if ( selectedNewAction === 'Talk' ) {
-      const intentId = response.data.id;
-      await axios.post(`${settings.botkit.host}:${settings.botkit.port}/phrases`, { bot_name: bot, phrases: phrases.map(phrase => ({ intentName: intentName, intentId: intentId, text: phrase })) });
+      await axios.post(`${settings.botkit.host}:${settings.botkit.port}/phrases`, { bot: bot, phrases: phrases.map(phrase => ({ intent: intentName, text: phrase })) });
     }
     closeModal();
     fetchIntents();
