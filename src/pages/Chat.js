@@ -135,7 +135,7 @@ const Chat = () => {
 
 
     useEffect(() => {
-        axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/status`).catch(error => {
+        axios.get(`${settings.botkit.url}/bot/${bot}/status`).catch(error => {
             if (typeof error.response !== 'undefined' && error.response.status === 404) {
                 history.push('/not-found');
             } else {
@@ -173,7 +173,7 @@ const Chat = () => {
         }
         messages.current = [...messages.current.filter(message => message.type !== 'buttons'), { text: text, issuer: t('chat.issuer.human'), type: 'text', time: moment().locale(i18n.languages[0]).format('YYYY-MM-DD HH:mm:ss') }];
         try {
-            const response = await axios.post(`${settings.botkit.host}:${settings.botkit.port}/handle`, { query: text, bot: bot, identifier: chatIdentifier });
+            const response = await axios.post(`${settings.botkit.url}/handle`, { query: text, bot: bot, identifier: chatIdentifier });
             answer(response.data);
         } catch (error) {
             console.warn('abotkit rest api is not available', error);
@@ -187,7 +187,7 @@ const Chat = () => {
     const sendPredefinedMessage = async (title, message) => {
         messages.current = [...messages.current.filter(message => message.type !== 'buttons'), { text: title, issuer: t('chat.issuer.human'), type: 'text', time: moment().locale(i18n.languages[0]).format('YYYY-MM-DD HH:mm:ss') }];
         try {
-            const response = await axios.post(`${settings.botkit.host}:${settings.botkit.port}/handle`, { query: message, bot: bot, identifier: chatIdentifier });
+            const response = await axios.post(`${settings.botkit.url}/handle`, { query: message, bot: bot, identifier: chatIdentifier });
             answer(response.data);
         } catch (error) {
             console.warn('abotkit rest api is not available', error);
