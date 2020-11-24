@@ -28,7 +28,7 @@ node dolores.js
 | ABOTKIT_DOLORES_KEYCLOAK_CLIENT_ID | Your keycloak abotkit client id | 'abotkit-local' |
 | ABOTKIT_DOLORES_KEYCLOAK_REALM | The keycloak abotkit realm | 'abotkit' |
 | ABOTKIT_DOLORES_PROXY_KEYCLOAK | Allow dolores to use /auth endpoint to proxy the keycloak instance | false |
-| ABOTKIT_DOLORES_PROXY_KEYCLOAK | Allow dolores to use /api endpoint to proxy the maeve instance | false |
+| ABOTKIT_DOLORES_PROXY_MAEVE | Allow dolores to use /api endpoint to proxy the maeve instance | false |
 
 # Issues
 
