@@ -208,8 +208,8 @@ const Intents = () => {
     fetchIntents();
   }
 
-  const removeExampleFromIntent = async example => {
-    await axios.delete(`${settings.botkit.url}/example`, { data: {bot: bot, example: example } });
+  const removeExampleFromIntent = async (example, intent) => {
+    await axios.delete(`${settings.botkit.url}/example`, { data: {bot: bot, example: example, intent: intent } });
     fetchIntents();
   }
 
@@ -319,7 +319,7 @@ const Intents = () => {
             <Button className={classes.button} onClick={() => addNewExample(key)} type="primary" shape="circle" icon={<PlusOutlined />} />
           </div>
 
-          { typeof intent.examples !== 'undefined' && intent.examples.map((example, key) => <div key={ key } className={classes.example}><CloseCircleOutlined onClick={() => removeExampleFromIntent(example)} /><span>{ example }</span></div>) }
+          { typeof intent.examples !== 'undefined' && intent.examples.map((example, key) => <div key={ key } className={classes.example}><CloseCircleOutlined onClick={() => removeExampleFromIntent(example, intent.name)} /><span>{ example }</span></div>) }
         </Panel>
       )}
     </Collapse> : null }
