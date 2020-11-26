@@ -7,7 +7,7 @@ const {
   ABOTKIT_DOLORES_PORT, ABOTKIT_DOLORES_URL, ABOTKIT_DOLORES_USE_KEYCLOAK, 
   ABOTKIT_DOLORES_KEYCLOAK_URL, ABOTKIT_DOLORES_KEYCLOAK_CLIENT_ID, 
   ABOTKIT_DOLORES_KEYCLOAK_REALM, ABOTKIT_MAEVE_URL,
-  ABOTKIT_DOLORES_PROXY_MAEVE, ABOTKIT_DOLORES_PROXY_KEYCLOAK } = process.env;
+  ABOTKIT_DOLORES_PROXY_MAEVE, ABOTKIT_DOLORES_PROXY_KEYCLOAK, ABOTKIT_DOLORES_OVERRIDE_PORT } = process.env;
 
 const url = ABOTKIT_DOLORES_URL || 'http://localhost'
 const port = ABOTKIT_DOLORES_PORT || 21520;
@@ -26,7 +26,11 @@ if (ABOTKIT_DOLORES_PROXY_MAEVE) {
     }
   });
   app.use(maeve);
-  maeve_url = `${url}:${port}/api`;
+  if (ABOTKIT_DOLORES_OVERRIDE_PORT) {
+    maeve_url = `${url}:${port}/api`;
+  } else {
+    maeve_url = `${url}/api`;
+  }
 }
 
 let keycloak_url = ABOTKIT_DOLORES_KEYCLOAK_URL || 'http://localhost:8080';
@@ -37,7 +41,11 @@ if (ABOTKIT_DOLORES_PROXY_KEYCLOAK && ABOTKIT_DOLORES_USE_KEYCLOAK) {
     secure: false
   });
   app.use(keycloak);
-  keycloak_url = `${url}:${port}`;
+  if (ABOTKIT_DOLORES_OVERRIDE_PORT) {
+    keycloak_url = `${url}:${port}`;
+  } else {
+    keycloak_url = url;
+  }
 }
 
 app.use('/static', express.static(path.join(__dirname, 'build/static')));
