@@ -20,6 +20,7 @@ let maeve_url = ABOTKIT_MAEVE_URL || 'http://localhost:3000';
 if (ABOTKIT_DOLORES_PROXY_MAEVE) {
   const maeve = createProxyMiddleware('/api', {
     target: `${maeve_url}/`,
+    secure: false,
     pathRewrite: {
       '^/api': '/'
     }
@@ -32,7 +33,8 @@ let keycloak_url = ABOTKIT_DOLORES_KEYCLOAK_URL || 'http://localhost:8080';
 
 if (ABOTKIT_DOLORES_PROXY_KEYCLOAK && ABOTKIT_DOLORES_USE_KEYCLOAK) {
   const keycloak = createProxyMiddleware('/auth', {
-    target: `${keycloak_url}`, changeOrigin: true
+    target: `${keycloak_url}`, 
+    secure: false
   });
   app.use(keycloak);
   keycloak_url = `${url}:${port}`;
