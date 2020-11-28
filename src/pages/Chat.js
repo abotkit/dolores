@@ -17,7 +17,8 @@ const useStyle = createUseStyles({
     display: {
         display: 'flex',
         flexDirection: 'column',
-        backgroundImage: 'url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png")'
+        backgroundImage: 'url("/backgrounds/snow-mountain.jpg")',
+        backgroundSize: 'cover'
     },
     messages: {
         flexGrow: 1,
@@ -75,7 +76,7 @@ const useStyle = createUseStyles({
     bot: {
         alignSelf: 'flex-end',
         borderTopRightRadius: 0,
-        background: '#dcf8c6',
+        background: '#d6eef3',
         '&:after': {
             content: '""',
             position: 'absolute',
@@ -86,7 +87,7 @@ const useStyle = createUseStyles({
             border: '8px solid transparent',
             borderRight: 0,
             borderTop: 0,
-            borderLeftColor: '#dcf8c6',
+            borderLeftColor: '#d6eef3',
             marginRight: -8
         }
     },
@@ -196,7 +197,7 @@ const Chat = () => {
         messagebox.current.scrollTop = messagebox.current.scrollHeight;
     }
 
-    const content = (<div className={classes.display} style={{height: displaySmartphone ? '100%' : 'calc(100vh - 22px - 64px - 70px)'}}>
+    const content = (<div className={classes.display} style={{height: displaySmartphone ? '100%' : 'calc(100vh - 22px - 64px - 70px - 32px)'}}>
         <div ref={messagebox} className={classes.messages}>
             {messages.current.map((message, i) => {
                 if (message.type === 'text') {
