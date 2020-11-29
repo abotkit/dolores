@@ -94,6 +94,8 @@
       "loading": {
         "tip": "Integrationen werden geladen..."
       },
+      "delete-confirmation": "Wollen sie diese Integration wirklich löschen?",
+      "delete": "Löschen",
       "notifications": {
         "linkToClipboard": "Integrations-Link in Zwischenablage kopiert."
       },
@@ -103,9 +105,17 @@
         "headline": "Integration hinzufügen",
         "name": "Name",
         "name-placeholder": "Name der Integration",
+        "integration-snippet": "Integrations-Code",
         "type": "Typ",
         "url": "URL",
         "link": "Link",
+        "url-placeholder": "https://your.url.domain/bot"
+      },
+      "modify-dialog": {
+        "headline": "Integration anpassen",
+        "name": "Name",
+        "name-placeholder": "Name der Integration",
+        "url": "URL",
         "url-placeholder": "https://your.url.domain/bot"
       }
     },
