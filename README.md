@@ -21,14 +21,14 @@ node dolores.js
 
 |         name        |        description             |    default                          |
 |---------------------|--------------------------------|-------------------------------------|
-| ABOTKIT_MAEVE_URL | url of your running maeve instance  |   'http://localhost'   |
-| ABOTKIT_MAEVE_PORT | port of your running maeve instance  |   3000               |
-| ABOTKIT_DOLORES_PORT | port for starting dolores  |   21520               |
-| ABOTKIT_DOLORES_USE_KEYCLOAK | use keycloak as security mechanism | 'false' |
-| ABOTKIT_DOLORES_KEYCLOAK_URL | host of a running keycloak instance | 'http://localhost' |
-| ABOTKIT_DOLORES_KEYCLOAK_PORT | port of a running keycloak instance | '8080' |
-| ABOTKIT_DOLORES_KEYCLOAK_CLIENT_ID | your keycloak abotkit client id | 'abotkit-local' |
-| ABOTKIT_DOLORES_KEYCLOAK_REALM | the keycloak abotkit realm | 'abotkit' |
+| ABOTKIT_MAEVE_URL | Url of your running maeve instance  |   'http://localhost:3000'   |
+| ABOTKIT_DOLORES_PORT | Port for starting dolores  |   21520               |
+| ABOTKIT_DOLORES_USE_KEYCLOAK | Use keycloak as security mechanism | 'false' |
+| ABOTKIT_DOLORES_KEYCLOAK_URL | Host of a running keycloak instance | 'http://localhost:8080' |
+| ABOTKIT_DOLORES_KEYCLOAK_CLIENT_ID | Your keycloak abotkit client id | 'abotkit-local' |
+| ABOTKIT_DOLORES_KEYCLOAK_REALM | The keycloak abotkit realm | 'abotkit' |
+| ABOTKIT_DOLORES_PROXY_KEYCLOAK | Allow dolores to use /auth endpoint to proxy the keycloak instance | false |
+| ABOTKIT_DOLORES_PROXY_MAEVE | Allow dolores to use /api endpoint to proxy the maeve instance | false |
 
 # Issues
 

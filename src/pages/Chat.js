@@ -17,7 +17,8 @@ const useStyle = createUseStyles({
     display: {
         display: 'flex',
         flexDirection: 'column',
-        backgroundImage: 'url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png")'
+        backgroundImage: 'url("/backgrounds/snow-mountain.jpg")',
+        backgroundSize: 'cover'
     },
     messages: {
         flexGrow: 1,
@@ -75,7 +76,7 @@ const useStyle = createUseStyles({
     bot: {
         alignSelf: 'flex-end',
         borderTopRightRadius: 0,
-        background: '#dcf8c6',
+        background: '#d6eef3',
         '&:after': {
             content: '""',
             position: 'absolute',
@@ -86,7 +87,7 @@ const useStyle = createUseStyles({
             border: '8px solid transparent',
             borderRight: 0,
             borderTop: 0,
-            borderLeftColor: '#dcf8c6',
+            borderLeftColor: '#d6eef3',
             marginRight: -8
         }
     },
@@ -135,7 +136,7 @@ const Chat = () => {
 
 
     useEffect(() => {
-        axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/status`).catch(error => {
+        axios.get(`${settings.botkit.url}/bot/${bot}/status`).catch(error => {
             if (typeof error.response !== 'undefined' && error.response.status === 404) {
                 history.push('/not-found');
             } else {
@@ -146,7 +147,6 @@ const Chat = () => {
 
     const answer = data => {
         for (const message of data) {
-            console.log(message)
             setTimeout(() => {
                 messages.current = [...messages.current, {
                     text: message.text,
@@ -155,7 +155,7 @@ const Chat = () => {
                     time: moment().locale(i18n.languages[0]).format("YYYY-MM-DD HH:mm:ss"),
                 }];
 
-                if (typeof message.buttons !== 'undefined') {
+                if (typeof message.buttons !== 'undefined' && message.buttons !== null) {
                     messages.current = [...messages.current, {
                         buttons: message.buttons,
                         type: 'buttons'
@@ -174,11 +174,11 @@ const Chat = () => {
         }
         messages.current = [...messages.current.filter(message => message.type !== 'buttons'), { text: text, issuer: t('chat.issuer.human'), type: 'text', time: moment().locale(i18n.languages[0]).format('YYYY-MM-DD HH:mm:ss') }];
         try {
-            const response = await axios.post(`${settings.botkit.host}:${settings.botkit.port}/handle`, { query: text, bot: bot, identifier: chatIdentifier });
+            const response = await axios.post(`${settings.botkit.url}/handle`, { query: text, bot: bot, identifier: chatIdentifier });
             answer(response.data);
         } catch (error) {
             console.warn('abotkit rest api is not available', error);
-            answer(t('chat.state.offline'));
+            answer([{ text: t('chat.state.offline') }]);
         } finally {
             setText('');
         }
@@ -188,16 +188,16 @@ const Chat = () => {
     const sendPredefinedMessage = async (title, message) => {
         messages.current = [...messages.current.filter(message => message.type !== 'buttons'), { text: title, issuer: t('chat.issuer.human'), type: 'text', time: moment().locale(i18n.languages[0]).format('YYYY-MM-DD HH:mm:ss') }];
         try {
-            const response = await axios.post(`${settings.botkit.host}:${settings.botkit.port}/handle`, { query: message, bot: bot, identifier: chatIdentifier });
+            const response = await axios.post(`${settings.botkit.url}/handle`, { query: message, bot: bot, identifier: chatIdentifier });
             answer(response.data);
         } catch (error) {
             console.warn('abotkit rest api is not available', error);
-            answer(t('chat.state.offline'));
+            answer([{ text: t('chat.state.offline') }]);
         }
         messagebox.current.scrollTop = messagebox.current.scrollHeight;
     }
 
-    const content = (<div className={classes.display} style={{height: displaySmartphone ? '100%' : 'calc(100vh - 22px - 64px - 70px)'}}>
+    const content = (<div className={classes.display} style={{height: displaySmartphone ? '100%' : 'calc(100vh - 22px - 64px - 70px - 32px)'}}>
         <div ref={messagebox} className={classes.messages}>
             {messages.current.map((message, i) => {
                 if (message.type === 'text') {

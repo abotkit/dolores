@@ -47,7 +47,7 @@ const Settings = () => {
 
   const changeBotLanguage = async value => {
     try {
-      await axios.post(`${settings.botkit.host}:${settings.botkit.port}/language`, { bot: bot, country_code: value });
+      await axios.post(`${settings.botkit.url}/language`, { bot: bot, country_code: value });
       setBotLanguage(value);
     } catch (error) {
       showNotification(t('settings.translation.error.title'), t('settings.translation.error.message', { bot: bot }));
@@ -56,11 +56,11 @@ const Settings = () => {
 
   useEffect(() => {
     const axiosSource = source.current;
-    axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/status`, {
+    axios.get(`${settings.botkit.url}/bot/${bot}/status`, {
       cancelToken: axiosSource.token
     }).then(response => {
       setbotAlive(true);
-      axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/settings`, {
+      axios.get(`${settings.botkit.url}/bot/${bot}/settings`, {
         cancelToken: axiosSource.token
       }).then(response => {
         const { host, port, type, language } = response.data;

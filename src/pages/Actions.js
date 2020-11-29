@@ -18,10 +18,10 @@ const Actions = () => {
 
   useEffect(() => {
     const axiosSource = source.current;
-    axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/status`, {
+    axios.get(`${settings.botkit.url}/bot/${bot}/status`, {
       cancelToken: axiosSource.token
     }).then(() => {
-      axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/actions`, {
+      axios.get(`${settings.botkit.url}/bot/${bot}/actions`, {
         cancelToken: axiosSource.token
       }).then(response => {
         setActions(response.data);

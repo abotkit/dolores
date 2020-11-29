@@ -41,7 +41,7 @@ const App = () => {
     if (settings.keycloak.enabled) {
       if (settings.keycloak.instance === null) {
         const keycloak = Keycloak({
-          url: `http://${settings.keycloak.url}:${settings.keycloak.port}/auth`,
+          url: `${settings.keycloak.url}/auth`,
           realm: settings.keycloak.realm,
           clientId: settings.keycloak.clientId,
         });

@@ -76,17 +76,19 @@ const Intents = () => {
   const CancelToken = useRef(Axios.CancelToken);
   const source = useRef(CancelToken.current.source());
 
-  const fetchIntents = useCallback(async () => {
-    setLoading(true);
+  const fetchIntents = useCallback(async (useLoadingAnimation=false) => {
+    if (useLoadingAnimation) {
+      setLoading(true);
+    }
     try {
-      const intents = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/intents`, {
+      const intents = (await axios.get(`${settings.botkit.url}/bot/${bot}/intents`, {
         cancelToken: source.current.token
       })).data;
-      const phrases = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/phrases`, {
+      const phrases = (await axios.get(`${settings.botkit.url}/bot/${bot}/phrases`, {
         cancelToken: source.current.token
       })).data;
       for (const intent of intents) {
-        intent.examples = (await axios.get(`${settings.botkit.host}:${settings.botkit.port}/intent/${intent.name}/bot/${bot}/examples`,{
+        intent.examples = (await axios.get(`${settings.botkit.url}/intent/${encodeURIComponent(intent.name)}/bot/${bot}/examples`,{
           cancelToken: source.current.token
         })).data;
       }
@@ -114,7 +116,7 @@ const Intents = () => {
 
   useEffect(() => {
     const axiosSource = source.current;
-    axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/actions`, {
+    axios.get(`${settings.botkit.url}/bot/${bot}/actions`, {
       cancelToken: axiosSource.token
     }).then(response => {
       const availableActions = response.data;
@@ -136,10 +138,10 @@ const Intents = () => {
 
   useEffect(() => {
     const axiosSource = source.current;
-    axios.get(`${settings.botkit.host}:${settings.botkit.port}/bot/${bot}/status`, {
+    axios.get(`${settings.botkit.url}/bot/${bot}/status`, {
       cancelToken: axiosSource.token
     }).then(() => {
-      fetchIntents();
+      fetchIntents(true);
     }).catch(error => {
       if (typeof error.response !== 'undefined' && error.response.status === 404) {
         history.push('/not-found');
@@ -197,7 +199,7 @@ const Intents = () => {
 
   const addNewExample = async intent => {
     try {
-      await axios.post(`${settings.botkit.host}:${settings.botkit.port}/example`, { bot: bot, intent: intents[intent].name, example: newExampleTexts[intent] });
+      await axios.post(`${settings.botkit.url}/example`, { bot: bot, intent: intents[intent].name, example: newExampleTexts[intent] });
     } catch (error) {
       showNotification('Couldn\'t add example', error.message);
       return;
@@ -206,8 +208,8 @@ const Intents = () => {
     fetchIntents();
   }
 
-  const removeExampleFromIntent = async example => {
-    await axios.delete(`${settings.botkit.host}:${settings.botkit.port}/example`, { data: {bot: bot, example: example } });
+  const removeExampleFromIntent = async (example, intent) => {
+    await axios.delete(`${settings.botkit.url}/example`, { data: {bot: bot, example: example, intent: intent } });
     fetchIntents();
   }
 
@@ -248,7 +250,7 @@ const Intents = () => {
 
   const addNewPhrase = async intent => {
     try {
-      await axios.post(`${settings.botkit.host}:${settings.botkit.port}/phrases`, { bot: bot, phrases: [{ intent: intents[intent].name, text: newPhrases[intent] }]});
+      await axios.post(`${settings.botkit.url}/phrases`, { bot: bot, phrases: [{ intent: intents[intent].name, text: newPhrases[intent] }]});
     } catch (error) {
       showNotification('Couldn\'t add phrase', error.message);
       return;
@@ -260,7 +262,7 @@ const Intents = () => {
   const removeIntentPhrase = async (event, intent, phrase) => {
     event.preventDefault();
     try {
-      await axios.delete(`${settings.botkit.host}:${settings.botkit.port}/phrase`, { data: { bot: bot, intentName: intent.name, intentId: intent.id, phrase: phrase }});
+      await axios.delete(`${settings.botkit.url}/phrase`, { data: { bot: bot, intent: intent.name, phrase: phrase }});
     } catch (error) {
       showNotification('Couldn\'t add phrase', error.message);
       return;
@@ -280,18 +282,15 @@ const Intents = () => {
       return;       
     }
 
-    let response;
-
     try {
-      response = await axios.post(`${settings.botkit.host}:${settings.botkit.port}/intent`, { action_id: actions.find(action => action.name === selectedNewAction).id, bot_name: bot, name: intentName, examples: examples });
+      await axios.post(`${settings.botkit.url}/intent`, { action: selectedNewAction, bot: bot, intent: intentName, examples: examples });
     } catch (error) {
       showNotification('Couldn\'t add intent', error.message);
       return;
     }
 
     if ( selectedNewAction === 'Talk' ) {
-      const intentId = response.data.id;
-      await axios.post(`${settings.botkit.host}:${settings.botkit.port}/phrases`, { bot_name: bot, phrases: phrases.map(phrase => ({ intentName: intentName, intentId: intentId, text: phrase })) });
+      await axios.post(`${settings.botkit.url}/phrases`, { bot: bot, phrases: phrases.map(phrase => ({ intent: intentName, text: phrase })) });
     }
     closeModal();
     fetchIntents();
@@ -320,7 +319,7 @@ const Intents = () => {
             <Button className={classes.button} onClick={() => addNewExample(key)} type="primary" shape="circle" icon={<PlusOutlined />} />
           </div>
 
-          { intent.examples.map((example, key) => <div key={ key } className={classes.example}><CloseCircleOutlined onClick={() => removeExampleFromIntent(example)} /><span>{ example }</span></div>) }
+          { typeof intent.examples !== 'undefined' && intent.examples.map((example, key) => <div key={ key } className={classes.example}><CloseCircleOutlined onClick={() => removeExampleFromIntent(example, intent.name)} /><span>{ example }</span></div>) }
         </Panel>
       )}
     </Collapse> : null }
