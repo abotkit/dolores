@@ -17,7 +17,7 @@ const useStyle = createUseStyles({
     display: {
         display: 'flex',
         flexDirection: 'column',
-        backgroundImage: 'url("/backgrounds/snow-mountain.jpg")',
+        backgroundImage: 'url("/assets/snow-mountain.jpg")',
         backgroundSize: 'cover'
     },
     messages: {
