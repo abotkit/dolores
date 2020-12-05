@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback, useContext, useRef } from 'rea
 import { notification, Breadcrumb, Collapse, Button, Modal, Input, Select, Tag, Divider, Spin } from 'antd';
 import { PlusOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useParams, useHistory } from 'react-router-dom';
-import { axios } from '../utils';
 import Axios from 'axios';
+import { axios } from '../utils';
 import { createUseStyles } from 'react-jss';
 import { useTranslation } from "react-i18next";
 import { SettingsContext } from '../SettingsContext';

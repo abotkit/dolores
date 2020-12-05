@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
 const { createProxyMiddleware } = require('http-proxy-middleware')
@@ -14,6 +15,9 @@ const port = ABOTKIT_DOLORES_PORT || 21520;
 
 app.set('views', path.join(__dirname, 'build'));
 app.engine('html', require('ejs').renderFile);
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 let maeve_url = ABOTKIT_MAEVE_URL || 'http://localhost:3000';
 
@@ -48,7 +52,8 @@ if (ABOTKIT_DOLORES_PROXY_KEYCLOAK && ABOTKIT_DOLORES_USE_KEYCLOAK) {
   }
 }
 
-app.use('/static', express.static(path.join(__dirname, 'build/static')));
+app.use(express.static(path.join(__dirname, 'build')));
+
 app.get('*', (req, res) => { res.render('index.html', { 
   ABOTKIT_DOLORES_USE_KEYCLOAK, ABOTKIT_DOLORES_KEYCLOAK_URL: keycloak_url, 
   ABOTKIT_MAEVE_URL: maeve_url, 
