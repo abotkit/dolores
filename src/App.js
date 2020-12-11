@@ -7,28 +7,39 @@ import './App.css';
 import { SettingsContext, defaultSettings } from './SettingsContext';
 import Keycloak from 'keycloak-js';
 
-const { Header, Content, Footer } = Layout;
+const { Content, Footer, Sider } = Layout;
 
 const Main = () => {
   const { path } = useRouteMatch();
-  const [settings] = useContext(SettingsContext);
+  const [settings, updateSettings] = useContext(SettingsContext);
   
   return (
     <>
-      <Header>
-        <div className="logo" />
+      <Sider
+        collapsible
+        collapsed={settings.collapsed}
+        breakpoint="md"
+        collapsedWidth="80"
+        onCollapse={(isCollapsed, type) => {
+          updateSettings(prevSettings => ({...prevSettings, collapsed: isCollapsed }));
+        }}>
+        <div className="logo" style={{
+          justifyContent: settings.collapsed ? 'center' : 'flex-start'
+        }}><span />{ !settings.collapsed && "robert" }</div>
         <Menu />
-      </Header>
-      <Content style={{ padding: '0 50px' }}>
-        { settings.keycloak.loading ? <div style={{ display: "flex", height: '50vh', alignItems: "center", justifyContent: "center" }}><Spin /></div> : <Switch>
-          <Route path={`${path}`} exact component={Chat} />
-          <Route path={`${path}/chat`} component={Chat} />
-          <Route path={`${path}/actions`} component={Actions} />
-          <Route path={`${path}/intents`} component={Intents} />
-          <Route path={`${path}/settings`} component={Settings} />
-        </Switch> }
-      </Content>
-      <Footer style={{ textAlign: 'center' }}>abotkit ©2020</Footer>
+      </Sider>
+      <Layout>
+        <Content>
+          { settings.keycloak.loading ? <div style={{ display: "flex", height: '50vh', alignItems: "center", justifyContent: "center" }}><Spin /></div> : <Switch>
+            <Route path={`${path}`} exact component={Chat} />
+            <Route path={`${path}/chat`} component={Chat} />
+            <Route path={`${path}/actions`} component={Actions} />
+            <Route path={`${path}/intents`} component={Intents} />
+            <Route path={`${path}/settings`} component={Settings} />
+          </Switch> }
+        </Content>
+        <Footer style={{ textAlign: 'center' }}>abotkit ©2020</Footer>
+      </Layout>
     </>
   );
 };

@@ -3,7 +3,7 @@ import { Link, withRouter, useParams, useRouteMatch, useHistory } from 'react-ro
 import { Menu } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SettingsContext } from '../SettingsContext';
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined, MessageOutlined, BulbOutlined, ThunderboltOutlined, KeyOutlined, ToolOutlined } from '@ant-design/icons';
 
 const { SubMenu } = Menu;
 
@@ -20,7 +20,7 @@ const AbotkitMenu = withRouter(props => {
   }
 
   const items = [
-    <Menu.Item key={`${url}/chat`}>
+    <Menu.Item key={`${url}/chat`} icon={<MessageOutlined />}>
       <Link to={`${url}/chat`}>{ t('menu.chat') }</Link>
     </Menu.Item>
   ]
@@ -41,13 +41,13 @@ const AbotkitMenu = withRouter(props => {
 
     if (keycloak && keycloak.authenticated) {
       items.push(
-        <Menu.Item key={`${url}/intents`}>
+        <Menu.Item key={`${url}/intents`} icon={<BulbOutlined />}>
         <Link to={`${url}/intents`}>{ t('menu.intents') }</Link>
         </Menu.Item>,
-        <Menu.Item key={`${url}/actions`}>
+        <Menu.Item key={`${url}/actions`} icon={<ThunderboltOutlined />}>
           <Link to={`${url}/actions`}>{ t('menu.actions') }</Link>
         </Menu.Item>,
-        <Menu.Item key={`${url}/settings`}>
+        <Menu.Item key={`${url}/settings`} icon={<ToolOutlined />}>
           <Link to={`${url}/settings`}>{ t('menu.settings') }</Link>
         </Menu.Item>,
         <SubMenu key="sub-menu-user" style={{ float: "right"}} icon={<UserOutlined />} title={keycloak.idTokenParsed.preferred_username}>
@@ -56,21 +56,21 @@ const AbotkitMenu = withRouter(props => {
       )
     } else {
       items.push(
-        <Menu.Item key={`${url}/settings`}>
+        <Menu.Item key={`${url}/settings`} icon={<ToolOutlined />}>
           <Link to={`${url}/settings`}>{ t('menu.settings') }</Link>
         </Menu.Item>,
-        <Menu.Item key="menu-login" onClick={login} style={{ float: "right"}}>Login</Menu.Item>
+        <Menu.Item icon={<KeyOutlined />} key="menu-login" onClick={login} style={{ float: "right"}}>Login</Menu.Item>
       );
     }
   } else {
     items.push(
-      <Menu.Item key={`${url}/intents`}>
+      <Menu.Item key={`${url}/intents`}  icon={<BulbOutlined />}>
       <Link to={`${url}/intents`}>{ t('menu.intents') }</Link>
       </Menu.Item>,
-      <Menu.Item key={`${url}/actions`}>
+      <Menu.Item key={`${url}/actions`} icon={<ThunderboltOutlined />}>
         <Link to={`${url}/actions`}>{ t('menu.actions') }</Link>
       </Menu.Item>,
-      <Menu.Item key={`${url}/settings`}>
+      <Menu.Item key={`${url}/settings`} icon={<ToolOutlined />}>
         <Link to={`${url}/settings`}>{ t('menu.settings') }</Link>
       </Menu.Item>
     );
@@ -79,7 +79,6 @@ const AbotkitMenu = withRouter(props => {
   return (
     <Menu 
     theme="dark"
-    mode="horizontal"
     style={{ lineHeight: '64px' }}
     selectedKeys={[location.pathname]}>
     {items}

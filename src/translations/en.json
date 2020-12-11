@@ -12,15 +12,9 @@
         "text": "Abotkit is an open source project which aims to be an interface between state of the art techniques and established chat bot frameworks to allow users without programming or ai skills to build an own chatbot just while chatting with it. These bots can react to custom or predefined actions. abotkit ships default algorithms or action providers like gmail, google search, google calender, Facebook or WhatsApp by default, but is also easy to customize."
       },
       "start": {
-        "headline": "Getting Started",
-        "text": "You can simply create your own bot right now. What would you like to call your bot?",
-        "placeholder": "A creative bot name",
-        "button": "Create"
-      },
-      "restore": {
-        "headline": "Already have a bot?",
-        "text": "You already have a bot? What's the name of your bot? I can take you there. You can use the \"Default Bot\" for testing.",
-        "placeholder": "Your bot name",
+        "headline": "Check out some chatbots 🚀",
+        "text": "Visit and check out our public bots.",
+        "placeholder": "A bot name",
         "button": "Visit"
       },
       "contribute": {
@@ -29,11 +23,14 @@
         "link": "check it out."
       }
     },
+    "breadcrumbs": {
+      "home": "Home",
+      "chat": "Chat",
+      "settings": "Settings",
+      "actions": "Actions",
+      "intents": "Intents"
+    },
     "chat": {
-      "breadcrumbs": {
-        "home": "Home",
-        "chat": "Chat"
-      },
       "input": {
         "placeholder": "Ask a bot"
       },
@@ -44,11 +41,7 @@
         "offline": "Sorry I'm offline"
       }
     },
-    "settings": {
-      "breadcrumbs": {
-        "home": "Home",
-        "settings": "Settings"
-      },    
+    "settings": {    
       "general": {
         "headline": "General"
       },
@@ -75,10 +68,6 @@
       }
     },
     "actions": {
-      "breadcrumbs": {
-        "home": "Home",
-        "actions": "Actions"
-      },
       "headline": "Available Actions"
     },
     "not-found": {
@@ -86,10 +75,6 @@
       "back": "Go back"
     },
     "intents": {
-      "breadcrumbs": {
-        "home": "Home",
-        "intents": "Intents"
-      },
       "loading": {
         "tip": "Loading intents..."
       },

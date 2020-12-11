@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import { Breadcrumb, Tag, notification } from 'antd';
+import { Tag, notification } from 'antd';
 import { Select } from 'antd';
+import { Pages, getBreadcrumbs } from '../components/Breadcrumbs';
 import { useTranslation } from "react-i18next";
 import { createUseStyles } from 'react-jss';
 import { SettingsContext } from '../SettingsContext';
 import { axios } from '../utils';
+import useCommonStyles from '../styles/commons';
 import Axios from 'axios';
 
 const useStyles = createUseStyles({
@@ -26,6 +28,7 @@ const Settings = () => {
   const [port, setPort] = useState('');
   const { t, i18n } = useTranslation();
   const classes = useStyles();
+  const sharedClasses = useCommonStyles();
   const [settings] = useContext(SettingsContext);
 
   const [language, setLanguage] = useState(i18n.languages[0].substring(0,2).toLocaleLowerCase());
@@ -86,12 +89,7 @@ const Settings = () => {
     }
   }, [bot, history, settings]);
 
-  const breadcrumbs = (
-    <Breadcrumb style={{ margin: '16px 0' }}>
-      <Breadcrumb.Item>{ t('settings.breadcrumbs.home') }</Breadcrumb.Item>
-      <Breadcrumb.Item>{ t('settings.breadcrumbs.settings')}</Breadcrumb.Item>
-    </Breadcrumb>
-  );
+  const breadcrumbs = getBreadcrumbs(Pages.SETTINGS, t, sharedClasses, settings.collapsed && bot);
 
   let languageOptions = (
     <>
@@ -112,7 +110,7 @@ const Settings = () => {
   }
 
   return (
-    <>
+    <div className={sharedClasses.page}>
       { breadcrumbs }
       <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
         <h3 className={classes.headline}>{ t('settings.general.headline') }</h3>
@@ -133,7 +131,7 @@ const Settings = () => {
           {languageOptions}</> 
         : null }
       </div>
-    </>
+    </div>
   );
 }
 

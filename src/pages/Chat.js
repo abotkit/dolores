@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useHistory } from 'react-router-dom';
-import { Breadcrumb, Input, Button } from 'antd';
+import { Input, Button } from 'antd';
 import { MessageOutlined } from '@ant-design/icons';
 import Smartphone from '../components/Chat/Smartphone';
 import { axios } from '../utils';
@@ -10,8 +10,9 @@ import moment from 'moment';
 import { SettingsContext } from '../SettingsContext';
 import 'moment/locale/de';
 import 'moment/locale/en-gb';
-
+import useCommonStyles from '../styles/commons';
 import { createUseStyles } from 'react-jss';
+import { Pages, getBreadcrumbs } from '../components/Breadcrumbs';
 
 const useStyle = createUseStyles({
     display: {
@@ -114,12 +115,13 @@ const Chat = () => {
     const [chatIdentifier] = useState(uuidv4());
 
     const classes = useStyle();
+    const sharedClasses = useCommonStyles();
     const messagebox = useRef();
 
     const isMobileDevice = () => {
         const width = window.innerWidth;
         const height = window.innerHeight;
-        return width < 700 || height < 700;
+        return width < 700 || height < 600;
     }
 
     const [displaySmartphone, setDisplaySmartphone] = useState(!isMobileDevice());
@@ -197,7 +199,7 @@ const Chat = () => {
         messagebox.current.scrollTop = messagebox.current.scrollHeight;
     }
 
-    const content = (<div className={classes.display} style={{height: displaySmartphone ? '100%' : 'calc(100vh - 22px - 64px - 70px - 32px)'}}>
+    const content = (<div className={classes.display} style={{height: displaySmartphone ? '100%' : 'calc(100vh - 60px - 48px)'}}> {/* 100% - header - footer */}
         <div ref={messagebox} className={classes.messages}>
             {messages.current.map((message, i) => {
                 if (message.type === 'text') {
@@ -225,16 +227,13 @@ const Chat = () => {
             suffix={<MessageOutlined onClick={sendMessage} />} />
     </div>)
 
-    return (
-        <>
-            <Breadcrumb style={{ margin: "16px 0" }}>
-                <Breadcrumb.Item>{t("chat.breadcrumbs.home")}</Breadcrumb.Item>
-                <Breadcrumb.Item>{t("chat.breadcrumbs.chat")}</Breadcrumb.Item>
-                <Breadcrumb.Item>{bot}</Breadcrumb.Item>
-            </Breadcrumb>
+    const breadcrumbs = getBreadcrumbs(Pages.CHAT, t, sharedClasses, settings.collapsed && bot, { marginLeft: displaySmartphone ? 0 : 16, marginRight: displaySmartphone ? 0 : 16 });
 
+    return (
+        <div className={displaySmartphone ? sharedClasses.page : {}}>
+            { breadcrumbs }
             { displaySmartphone ? <Smartphone>{ content }</Smartphone> : content }
-        </>
+        </div>
     );
 };
 

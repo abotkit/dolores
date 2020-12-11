@@ -1,7 +1,36 @@
 @import '~antd/dist/antd.css';
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+body {
+  font-family: 'Roboto Mono', monospace;
+}
+
+.logo {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.65);
+  text-transform: capitalize;
+}
+
+.logo span {
+  height: 32px;
+  width: 48px;
+  margin: 12px;
+  background-color: rgba(255, 255, 255, 0.65);
+}
 
 .app, .layout {
   min-height: 100vh;
+}
+
+.ant-layout-footer {
+  padding: 0 !important;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .crawler-selector {
@@ -23,10 +52,4 @@
   display: flex;
   justify-content: center;
   padding: 5vh 0;
-}
-
-@media screen and (max-width: 600px) {
-  .ant-layout-content {
-    padding: 0px 20px !important;
-  }
 }
