@@ -106,6 +106,7 @@ const useStyle = createUseStyles({
 
 const Chat = () => {
     const { t, i18n } = useTranslation();
+    const { languages } = i18n;
     const [text, setText] = useState('');
     const { bot } = useParams();
     const history = useHistory();
@@ -131,6 +132,31 @@ const Chat = () => {
         setDisplaySmartphone(!isMobileDevice())
     }, []);
 
+    const answer = useCallback(async data => {
+        const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+        for (const message of data) {
+            await sleep(800);
+            setIsTyping(false);
+            await sleep(200);
+            messages.current = [...messages.current, {
+                text: message.text,
+                issuer: bot,
+                type: 'text',
+                time: moment().locale(languages[0]).format("YYYY-MM-DD HH:mm:ss"),
+            }];
+
+            if (typeof message.buttons !== 'undefined' && message.buttons !== null) {
+                messages.current = [...messages.current, {
+                    buttons: message.buttons,
+                    type: 'buttons'
+                }];
+            }
+            forceUpdate();
+            messagebox.current.scrollTop = messagebox.current.scrollHeight;
+        }
+    }, [bot, forceUpdate, languages]);
+
     useEffect(() => {
         window.addEventListener('resize', handleWindowSizeChange);
         return () => {
@@ -138,47 +164,32 @@ const Chat = () => {
         }
     }, [handleWindowSizeChange]);
 
-
     useEffect(() => {
-        axios.get(`${settings.botkit.url}/bot/${bot}/status`).catch(error => {
+        axios.get(`${settings.botkit.url}/bot/${bot}/status`).then(async () => {
+            setIsTyping(true);
+            try {
+                const response = await axios.post(`${settings.botkit.url}/handle`, { query: 'What can you do for me?', bot: bot, identifier: chatIdentifier });
+                await answer(response.data);
+            } catch (error) {
+                console.warn('abotkit rest api is not available', error);
+                answer([{ text: t('chat.state.offline') }]);                
+            } finally {
+                setIsTyping(false);
+            }
+        }).catch(error => {
             if (typeof error.response !== 'undefined' && error.response.status === 404) {
                 history.push('/not-found');
             } else {
                 console.warn('abotkit rest api is not available', error);
             }
         });
-    }, [history, bot, settings]);
-
-    const answer = data => {
-        for (const message of data) {
-            setTimeout(() => {
-                setIsTyping(false);
-            }, 600);
-            setTimeout(() => {
-                messages.current = [...messages.current, {
-                    text: message.text,
-                    issuer: bot,
-                    type: 'text',
-                    time: moment().locale(i18n.languages[0]).format("YYYY-MM-DD HH:mm:ss"),
-                }];
-
-                if (typeof message.buttons !== 'undefined' && message.buttons !== null) {
-                    messages.current = [...messages.current, {
-                        buttons: message.buttons,
-                        type: 'buttons'
-                    }];
-                }
-                forceUpdate();
-                messagebox.current.scrollTop = messagebox.current.scrollHeight;
-            }, 800);
-        }
-    };
+    }, [history, bot, settings, answer, chatIdentifier, t]);
 
     const sendMessage = async () => {
         if (!text) {
             return;
         }
-        messages.current = [...messages.current.filter(message => message.type !== 'buttons'), { text: text, issuer: t('chat.issuer.human'), type: 'text', time: moment().locale(i18n.languages[0]).format('YYYY-MM-DD HH:mm:ss') }];
+        messages.current = [...messages.current.filter(message => message.type !== 'buttons'), { text: text, issuer: t('chat.issuer.human'), type: 'text', time: moment().locale(languages[0]).format('YYYY-MM-DD HH:mm:ss') }];
         messagebox.current.scrollTop = messagebox.current.scrollHeight;
         setText('');
         setTimeout(async () => {
@@ -195,7 +206,7 @@ const Chat = () => {
     }
 
     const sendPredefinedMessage = async (title, message) => {
-        messages.current = [...messages.current.filter(message => message.type !== 'buttons'), { text: title, issuer: t('chat.issuer.human'), type: 'text', time: moment().locale(i18n.languages[0]).format('YYYY-MM-DD HH:mm:ss') }];
+        messages.current = [...messages.current.filter(message => message.type !== 'buttons'), { text: title, issuer: t('chat.issuer.human'), type: 'text', time: moment().locale(languages[0]).format('YYYY-MM-DD HH:mm:ss') }];
         try {
             const response = await axios.post(`${settings.botkit.url}/handle`, { query: message, bot: bot, identifier: chatIdentifier });
             answer(response.data);
@@ -212,7 +223,7 @@ const Chat = () => {
                 if (message.type === 'text') {
                     return <div key={i} className={`${classes.message} ${message.issuer === bot ? classes.bot : classes.human}`}>
                         <p>{message.text}</p>
-                        <span>{moment().locale(i18n.languages[0]).format('HH:mm')}</span>
+                        <span>{moment().locale(languages[0]).format('HH:mm')}</span>
                     </div>
                 } else if (message.type === 'buttons') {
                     return <div key={i} className={classes.message} style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
