@@ -1,3 +1,5 @@
+![E2E Testing](https://github.com/abotkit/dolores/workflows/E2E%20Testing/badge.svg?branch=main)
+
 # dolores
 dolores is the abotkit react-based ui 
 
