@@ -13,6 +13,7 @@ import 'moment/locale/en-gb';
 import useCommonStyles from '../styles/commons';
 import { createUseStyles } from 'react-jss';
 import { Pages, getBreadcrumbs } from '../components/Breadcrumbs';
+import TypingIndicator from '../components/TypingIndicator';
 
 const useStyle = createUseStyles({
     display: {
@@ -113,6 +114,7 @@ const Chat = () => {
     const messages = useRef([]);
     const [settings] = useContext(SettingsContext);
     const [chatIdentifier] = useState(uuidv4());
+    const [isTyping, setIsTyping] = useState(false);
 
     const classes = useStyle();
     const sharedClasses = useCommonStyles();
@@ -150,6 +152,9 @@ const Chat = () => {
     const answer = data => {
         for (const message of data) {
             setTimeout(() => {
+                setIsTyping(false);
+            }, 600);
+            setTimeout(() => {
                 messages.current = [...messages.current, {
                     text: message.text,
                     issuer: bot,
@@ -163,7 +168,6 @@ const Chat = () => {
                         type: 'buttons'
                     }];
                 }
-
                 forceUpdate();
                 messagebox.current.scrollTop = messagebox.current.scrollHeight;
             }, 800);
@@ -175,16 +179,19 @@ const Chat = () => {
             return;
         }
         messages.current = [...messages.current.filter(message => message.type !== 'buttons'), { text: text, issuer: t('chat.issuer.human'), type: 'text', time: moment().locale(i18n.languages[0]).format('YYYY-MM-DD HH:mm:ss') }];
-        try {
-            const response = await axios.post(`${settings.botkit.url}/handle`, { query: text, bot: bot, identifier: chatIdentifier });
-            answer(response.data);
-        } catch (error) {
-            console.warn('abotkit rest api is not available', error);
-            answer([{ text: t('chat.state.offline') }]);
-        } finally {
-            setText('');
-        }
         messagebox.current.scrollTop = messagebox.current.scrollHeight;
+        setText('');
+        setTimeout(async () => {
+            setIsTyping(true);
+            try {
+                const response = await axios.post(`${settings.botkit.url}/handle`, { query: text, bot: bot, identifier: chatIdentifier });
+                answer(response.data);
+            } catch (error) {
+                console.warn('abotkit rest api is not available', error);
+                answer([{ text: t('chat.state.offline') }]);
+            }
+            messagebox.current.scrollTop = messagebox.current.scrollHeight;
+        }, 1000);
     }
 
     const sendPredefinedMessage = async (title, message) => {
@@ -217,6 +224,7 @@ const Chat = () => {
                     return null
                 }
             })}
+            <TypingIndicator visible={isTyping} />
         </div>
         <Input
             className={classes.input}
