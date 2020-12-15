@@ -4,7 +4,8 @@
       "chat": "Chat",
       "intents": "Intents",
       "actions": "Actions",
-      "settings": "Settings"
+      "settings": "Settings",
+      "statistics": "Statistics"
     },
     "about": {
       "project": {
@@ -23,12 +24,31 @@
         "link": "check it out."
       }
     },
+    "statistics": {
+      "headline": "Requests Overview",
+      "table": {
+        "header": {
+          "query": "Query",
+          "intent": "Intent",
+          "match": "Match",
+          "time": "Time",
+          "action": "Action"
+        },
+        "popconfirm": {
+          "yes": "Yes",
+          "no": "No",
+          "question": "Are you sure to delete this entry?"
+        },
+        "tooltip": "Add as example for an intent"
+      }
+    },
     "breadcrumbs": {
       "home": "Home",
       "chat": "Chat",
       "settings": "Settings",
       "actions": "Actions",
-      "intents": "Intents"
+      "intents": "Intents",
+      "statistics": "Statistics"
     },
     "chat": {
       "input": {

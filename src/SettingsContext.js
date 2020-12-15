@@ -23,7 +23,8 @@ const settings = {
   colors: {
     primary: '#002F53',
     secondary: '#2D999F',
-    accent: '#F25D50'
+    accent: '#F25D50',
+    link: '#1890ff',
   },
   collapsed: false 
 }

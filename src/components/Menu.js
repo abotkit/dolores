@@ -3,7 +3,7 @@ import { Link, withRouter, useParams, useRouteMatch, useHistory } from 'react-ro
 import { Menu } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SettingsContext } from '../SettingsContext';
-import { UserOutlined, MessageOutlined, BulbOutlined, ThunderboltOutlined, KeyOutlined, ToolOutlined } from '@ant-design/icons';
+import { UserOutlined, MessageOutlined, LineChartOutlined, BulbOutlined, ThunderboltOutlined, KeyOutlined, ToolOutlined } from '@ant-design/icons';
 
 const { SubMenu } = Menu;
 
@@ -47,6 +47,9 @@ const AbotkitMenu = withRouter(props => {
         <Menu.Item key={`${url}/actions`} icon={<ThunderboltOutlined />}>
           <Link to={`${url}/actions`}>{ t('menu.actions') }</Link>
         </Menu.Item>,
+        <Menu.Item key={`${url}/statistics`} icon={<LineChartOutlined />}>
+          <Link to={`${url}/statistics`}>{ t('menu.statistics') }</Link>
+        </Menu.Item>,
         <Menu.Item key={`${url}/settings`} icon={<ToolOutlined />}>
           <Link to={`${url}/settings`}>{ t('menu.settings') }</Link>
         </Menu.Item>,
@@ -69,6 +72,9 @@ const AbotkitMenu = withRouter(props => {
       </Menu.Item>,
       <Menu.Item key={`${url}/actions`} icon={<ThunderboltOutlined />}>
         <Link to={`${url}/actions`}>{ t('menu.actions') }</Link>
+      </Menu.Item>,
+      <Menu.Item key={`${url}/statistics`} icon={<LineChartOutlined />}>
+        <Link to={`${url}/statistics`}>{ t('menu.statistics') }</Link>
       </Menu.Item>,
       <Menu.Item key={`${url}/settings`} icon={<ToolOutlined />}>
         <Link to={`${url}/settings`}>{ t('menu.settings') }</Link>

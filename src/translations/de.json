@@ -4,7 +4,8 @@
       "chat": "Chat",
       "intents": "Vorhaben",
       "actions": "Aktionen",
-      "settings": "Einstellungen"
+      "settings": "Einstellungen",
+      "statistics": "Statistiken"
     },
     "about": {
       "project": {
@@ -23,12 +24,31 @@
         "link": "vorbeischaust."
       }
     },
+    "statistics": {
+      "headline": "Übersicht der Anfragen",
+      "table": {
+        "header": {
+          "query": "Anfrage",
+          "intent": "Vorhaben",
+          "match": "Match",
+          "time": "Zeit",
+          "action": "Aktion"
+        },
+        "popconfirm": {
+          "yes": "Ja",
+          "no": "Nein",
+          "question": "Soll der Eintrag wirklich entfernt werden?"
+        },
+        "tooltip": "Als Beispiel für ein Vorhaben hinzufügen"
+      }
+    },
     "breadcrumbs": {
       "home": "Startseite",
       "chat": "Chat",
       "settings": "Einstellungen",
       "actions": "Aktionen",
-      "intents": "Vorhaben"
+      "intents": "Vorhaben",
+      "statistics": "Statistiken"
     },
     "chat": {
       "input": {
