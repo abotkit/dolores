@@ -49,7 +49,8 @@
       "settings": "Einstellungen",
       "actions": "Aktionen",
       "intents": "Vorhaben",
-      "statistics": "Statistiken"
+      "statistics": "Statistiken",
+      "integrations": "Integrationen"
     },
     "chat": {
       "input": {

@@ -6,6 +6,8 @@ import { axios } from '../utils';
 import Axios from 'axios';
 import { createUseStyles } from 'react-jss';
 import { useTranslation } from "react-i18next";
+import useCommonStyles from '../styles/commons';
+import { Pages, getBreadcrumbs } from '../components/Breadcrumbs';
 import { SettingsContext } from '../SettingsContext';
 
 const { Panel } = Collapse;
@@ -65,6 +67,7 @@ const Integrations = () => {
 
   const CancelToken = useRef(Axios.CancelToken);
   const source = useRef(CancelToken.current.source());
+  const sharedClasses = useCommonStyles();
 
   const fetchIntegrations = useCallback(async () => {
     setLoading(true);
@@ -102,12 +105,7 @@ const Integrations = () => {
     }
   }, [fetchIntegrations, history, bot, settings]);
 
-  const breadcrumbs = (
-    <Breadcrumb style={{ margin: '16px 0' }}>
-      <Breadcrumb.Item>{t('integrations.breadcrumbs.home')}</Breadcrumb.Item>
-      <Breadcrumb.Item>{t('integrations.breadcrumbs.integrations')}</Breadcrumb.Item>
-    </Breadcrumb>
-  );
+  const breadcrumbs = getBreadcrumbs(Pages.INTEGRATIONS, t, sharedClasses, settings.collapsed && bot)
 
   if (settings.keycloak.enabled && !settings.keycloak.instance.authenticated) {
     return (
@@ -304,11 +302,11 @@ const Integrations = () => {
   }
 
   return (
-    <>
+    <div className={sharedClasses.page}>
       { breadcrumbs}
       <h1>{t('integrations.headline')}</h1>
       { content}
-    </>
+    </div>
   );
 }
 
