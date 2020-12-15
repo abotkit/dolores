@@ -7,7 +7,8 @@ const Pages = Object.freeze({
   INTENTS: 'ABOTKIT.PAGE.INTENTS',
   ACTIONS: 'ABOTKIT.PAGE.ACTIONS',
   SETTINGS: 'ABOTKIT.PAGE.SETTINGS',
-  STATISTICS: 'ABOTKIT.PAGE.STATISTICS'
+  STATISTICS: 'ABOTKIT.PAGE.STATISTICS',
+  INTEGRATIONS: 'ABOTKIT.PAGE.INTEGRATIONS'
 })
 
 const getBreadcrumbs = (page, t, sharedClasses, bot, style={}) => {
@@ -24,6 +25,8 @@ const getBreadcrumbs = (page, t, sharedClasses, bot, style={}) => {
     currentPage = <Breadcrumb.Item>{ t('breadcrumbs.settings') }</Breadcrumb.Item>
   } else if (page === Pages.STATISTICS) {
     currentPage = <Breadcrumb.Item>{ t('breadcrumbs.statistics') }</Breadcrumb.Item>
+  } else if (page === Pages.INTEGRATIONS) {
+    currentPage = <Breadcrumb.Item>{ t('breadcrumbs.integrations') }</Breadcrumb.Item>
   } 
 
   if (bot) {
