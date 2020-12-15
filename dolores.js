@@ -48,7 +48,14 @@ if (ABOTKIT_DOLORES_PROXY_KEYCLOAK && ABOTKIT_DOLORES_USE_KEYCLOAK) {
   }
 }
 
+app.use('/assets', express.static(path.join(__dirname, 'build/assets')));
 app.use('/static', express.static(path.join(__dirname, 'build/static')));
+app.use('/favicon.ico', express.static(path.join(__dirname, 'build/favicon.ico')));
+app.use('/logo192.png', express.static(path.join(__dirname, 'build/logo192.png')));
+app.use('/logo512.png', express.static(path.join(__dirname, 'build/logo512.png')));
+app.use('/manifest.json', express.static(path.join(__dirname, 'build/manifest.json')));
+app.use('/robots.txt', express.static(path.join(__dirname, 'build/robots.txt')));
+
 app.get('*', (req, res) => { res.render('index.html', { 
   ABOTKIT_DOLORES_USE_KEYCLOAK, ABOTKIT_DOLORES_KEYCLOAK_URL: keycloak_url, 
   ABOTKIT_MAEVE_URL: maeve_url, 

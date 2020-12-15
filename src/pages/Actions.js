@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import { Breadcrumb, Card } from 'antd';
+import { Card } from 'antd';
+import { Pages, getBreadcrumbs } from '../components/Breadcrumbs';
 import { axios } from '../utils';
 import Axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { SettingsContext } from '../SettingsContext';
+import useCommonStyles from '../styles/commons';
 
 const Actions = () => {
   const { bot } = useParams();
@@ -12,7 +14,7 @@ const Actions = () => {
   const history = useHistory();
   const { t } = useTranslation();
   const [settings] = useContext(SettingsContext);
-
+  const sharedClasses = useCommonStyles();
   const CancelToken = useRef(Axios.CancelToken);
   const source = useRef(CancelToken.current.source());
 
@@ -43,12 +45,7 @@ const Actions = () => {
     }
   }, [bot, history, settings]);
 
-  const breadcrumbs = (
-    <Breadcrumb style={{ margin: '16px 0' }}>
-      <Breadcrumb.Item>{ t('actions.breadcrumbs.home') }</Breadcrumb.Item>
-      <Breadcrumb.Item>{ t('actions.breadcrumbs.actions') }</Breadcrumb.Item>
-    </Breadcrumb>
-  )
+  const breadcrumbs = getBreadcrumbs(Pages.ACTIONS, t, sharedClasses, settings.collapsed && bot)
 
   if (settings.keycloak.enabled && !settings.keycloak.instance.authenticated) {
     return (
@@ -60,7 +57,7 @@ const Actions = () => {
   }
 
   return (
-    <>
+    <div className={sharedClasses.page}>
       { breadcrumbs }
       <h1>{ t('actions.headline') }</h1>
       { actions.map((action, i) => {
@@ -74,7 +71,7 @@ const Actions = () => {
           </Card>
         )
       })}
-    </>
+    </div>
   );
 }
 

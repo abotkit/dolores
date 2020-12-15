@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback, useContext, useRef } from 'react';
-import { notification, Breadcrumb, Collapse, Button, Modal, Input, Select, Tag, Divider, Spin } from 'antd';
+import { notification, Collapse, Button, Modal, Input, Select, Tag, Divider, Spin } from 'antd';
 import { PlusOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Pages, getBreadcrumbs } from '../components/Breadcrumbs';
 import { useParams, useHistory } from 'react-router-dom';
-import { axios } from '../utils';
 import Axios from 'axios';
+import { axios } from '../utils';
 import { createUseStyles } from 'react-jss';
 import { useTranslation } from "react-i18next";
 import { SettingsContext } from '../SettingsContext';
+import useCommonStyles from '../styles/commons';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -72,6 +74,7 @@ const Intents = () => {
   const [intentPhrases, setIntentPhrases] = useState({});
   const [newPhrases, setNewPhrases] = useState([]);
   const [loading, setLoading] = useState(false);
+  const sharedClasses = useCommonStyles();
 
   const CancelToken = useRef(Axios.CancelToken);
   const source = useRef(CancelToken.current.source());
@@ -155,12 +158,7 @@ const Intents = () => {
     }
   }, [fetchIntents, history, bot, settings]);
 
-  const breadcrumbs = (
-    <Breadcrumb style={{ margin: '16px 0' }}>
-      <Breadcrumb.Item>{ t('intents.breadcrumbs.home') }</Breadcrumb.Item>
-      <Breadcrumb.Item>{ t('intents.breadcrumbs.intents') }</Breadcrumb.Item>
-    </Breadcrumb>
-  );
+  const breadcrumbs = getBreadcrumbs(Pages.INTENTS, t, sharedClasses, settings.collapsed && bot)
 
   if (settings.keycloak.enabled && !settings.keycloak.instance.authenticated) {
     return (
@@ -361,11 +359,11 @@ const Intents = () => {
   }
 
   return (
-    <>
+    <div className={sharedClasses.page}>
       { breadcrumbs }
       <h1>{ t('intents.headline') }</h1>
       { content }
-    </>
+    </div>
   );
 }
 

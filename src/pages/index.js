@@ -4,4 +4,5 @@ export {default as Intents} from './Intents';
 export {default as Integrations} from './Integrations';
 export {default as Settings} from './Settings';
 export {default as About} from './About';
+export {default as Statistics} from './Statistics';
 export {default as BotNotFound} from './BotNotFound'; 

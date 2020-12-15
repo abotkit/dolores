@@ -5,7 +5,8 @@
       "intents": "Vorhaben",
       "actions": "Aktionen",
       "integrations": "Integrationen",
-      "settings": "Einstellungen"
+      "settings": "Einstellungen",
+      "statistics": "Statistiken"
     },
     "about": {
       "project": {
@@ -13,15 +14,9 @@
         "text": "Abotkit ist ein Open-Source-Projekt mit dem Ziel, aktuelle Alogrithmen, etablierte Chat-Bot-Frameworks und eine einfache Benutzungsoberfläche zu verbinden, um Benutzern ohne Programmier- oder KI-Kenntnisse zu erlauben, ihren eigenen Chatbot während des Chattens selbst zu entwickeln und später für Kunden oder andere Anwender bereitzustellen. Diese Bots können auf benutzerdefinierte oder vordefinierte Aktionen reagieren. Abotkit enthält bereits Standard-Algorithmen oder Aktionen wie z.B. gmail, google search, google calender ist aber gleichzeitig einfach zu individualisieren und zu erweitern."
       },
       "start": {
-        "headline": "Erste Schritte",
-        "text": "Du kannst hier direkt einen neuen Bot erstellen. Wie möchtest du ihn nennen?",
-        "placeholder": "Dein kreativer Botname",
-        "button": "Erstellen"
-      },
-      "restore": {
-        "headline": "Du hast bereits einen Bot?",
-        "text": "Wenn du schon einen Bot hast, kannst du mir seinen Namen verraten. Ich bringe dich dann zu ihm. Zum Testen kannst du auch unseren \"Default Bot\" benutzen.",
-        "placeholder": "Dein Botname",
+        "headline": "Chatbots ausprobieren 🚀",
+        "text": "Besuche und teste einen von unseren öffentlichen bots.",
+        "placeholder": "Ein Botname",
         "button": "Besuchen"
       },
       "contribute": {
@@ -30,11 +25,33 @@
         "link": "vorbeischaust."
       }
     },
+    "statistics": {
+      "headline": "Übersicht der Anfragen",
+      "table": {
+        "header": {
+          "query": "Anfrage",
+          "intent": "Vorhaben",
+          "match": "Match",
+          "time": "Zeit",
+          "action": "Aktion"
+        },
+        "popconfirm": {
+          "yes": "Ja",
+          "no": "Nein",
+          "question": "Soll der Eintrag wirklich entfernt werden?"
+        },
+        "tooltip": "Als Beispiel für ein Vorhaben hinzufügen"
+      }
+    },
+    "breadcrumbs": {
+      "home": "Startseite",
+      "chat": "Chat",
+      "settings": "Einstellungen",
+      "actions": "Aktionen",
+      "intents": "Vorhaben",
+      "statistics": "Statistiken"
+    },
     "chat": {
-      "breadcrumbs": {
-        "home": "Startseite",
-        "chat": "Chat"
-      },
       "input": {
         "placeholder": "Frage einen Bot"
       },
@@ -45,11 +62,7 @@
         "offline": "Tut mir Leid ich bin grad nicht zu erreichen."
       }
     },
-    "settings": {
-      "breadcrumbs": {
-        "home": "Startseite",
-        "settings": "Einstellungen"
-      },    
+    "settings": { 
       "general": {
         "headline": "Allgemein"
       },
@@ -76,10 +89,6 @@
       }
     },
     "actions": {
-      "breadcrumbs": {
-        "home": "Startseite",
-        "actions": "Aktionen"
-      },
       "headline": "Verfügbare Aktionen"
     },
     "not-found": {
@@ -120,10 +129,6 @@
       }
     },
     "intents": {
-      "breadcrumbs": {
-        "home": "Startseite",
-        "intents": "Vorhaben"
-      },
       "loading": {
         "tip": "Vorgänge werden geladen..."
       },

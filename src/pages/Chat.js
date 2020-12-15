@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useHistory } from 'react-router-dom';
-import { Breadcrumb, Input, Button } from 'antd';
+import { Input, Button } from 'antd';
 import { MessageOutlined } from '@ant-design/icons';
 import Smartphone from '../components/Chat/Smartphone';
 import { axios } from '../utils';
@@ -10,14 +10,16 @@ import moment from 'moment';
 import { SettingsContext } from '../SettingsContext';
 import 'moment/locale/de';
 import 'moment/locale/en-gb';
-
+import useCommonStyles from '../styles/commons';
 import { createUseStyles } from 'react-jss';
+import { Pages, getBreadcrumbs } from '../components/Breadcrumbs';
+import TypingIndicator from '../components/TypingIndicator';
 
 const useStyle = createUseStyles({
     display: {
         display: 'flex',
         flexDirection: 'column',
-        backgroundImage: 'url("/backgrounds/snow-mountain.jpg")',
+        backgroundImage: 'url("/assets/snow-mountain.jpg")',
         backgroundSize: 'cover'
     },
     messages: {
@@ -104,6 +106,7 @@ const useStyle = createUseStyles({
 
 const Chat = () => {
     const { t, i18n } = useTranslation();
+    const { languages } = i18n;
     const [text, setText] = useState('');
     const { bot } = useParams();
     const history = useHistory();
@@ -112,20 +115,47 @@ const Chat = () => {
     const messages = useRef([]);
     const [settings] = useContext(SettingsContext);
     const [chatIdentifier] = useState(uuidv4());
+    const [isTyping, setIsTyping] = useState(false);
 
     const classes = useStyle();
+    const sharedClasses = useCommonStyles();
     const messagebox = useRef();
 
     const isMobileDevice = () => {
         const width = window.innerWidth;
         const height = window.innerHeight;
-        return width < 700 || height < 700;
+        return width < 700 || height < 600;
     }
 
     const [displaySmartphone, setDisplaySmartphone] = useState(!isMobileDevice());
     const handleWindowSizeChange = useCallback(() => {
         setDisplaySmartphone(!isMobileDevice())
     }, []);
+
+    const answer = useCallback(async data => {
+        const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+        for (const message of data) {
+            await sleep(800);
+            setIsTyping(false);
+            await sleep(200);
+            messages.current = [...messages.current, {
+                text: message.text,
+                issuer: bot,
+                type: 'text',
+                time: moment().locale(languages[0]).format("YYYY-MM-DD HH:mm:ss"),
+            }];
+
+            if (typeof message.buttons !== 'undefined' && message.buttons !== null) {
+                messages.current = [...messages.current, {
+                    buttons: message.buttons,
+                    type: 'buttons'
+                }];
+            }
+            forceUpdate();
+            messagebox.current.scrollTop = messagebox.current.scrollHeight;
+        }
+    }, [bot, forceUpdate, languages]);
 
     useEffect(() => {
         window.addEventListener('resize', handleWindowSizeChange);
@@ -134,59 +164,49 @@ const Chat = () => {
         }
     }, [handleWindowSizeChange]);
 
-
     useEffect(() => {
-        axios.get(`${settings.botkit.url}/bot/${bot}/status`).catch(error => {
+        axios.get(`${settings.botkit.url}/bot/${bot}/status`).then(async () => {
+            setIsTyping(true);
+            try {
+                const response = await axios.post(`${settings.botkit.url}/handle`, { query: 'What can you do for me?', bot: bot, identifier: chatIdentifier });
+                await answer(response.data);
+            } catch (error) {
+                console.warn('abotkit rest api is not available', error);
+                answer([{ text: t('chat.state.offline') }]);                
+            } finally {
+                setIsTyping(false);
+            }
+        }).catch(error => {
             if (typeof error.response !== 'undefined' && error.response.status === 404) {
                 history.push('/not-found');
             } else {
                 console.warn('abotkit rest api is not available', error);
             }
         });
-    }, [history, bot, settings]);
-
-    const answer = data => {
-        for (const message of data) {
-            setTimeout(() => {
-                messages.current = [...messages.current, {
-                    text: message.text,
-                    issuer: bot,
-                    type: 'text',
-                    time: moment().locale(i18n.languages[0]).format("YYYY-MM-DD HH:mm:ss"),
-                }];
-
-                if (typeof message.buttons !== 'undefined' && message.buttons !== null) {
-                    messages.current = [...messages.current, {
-                        buttons: message.buttons,
-                        type: 'buttons'
-                    }];
-                }
-
-                forceUpdate();
-                messagebox.current.scrollTop = messagebox.current.scrollHeight;
-            }, 800);
-        }
-    };
+    }, [history, bot, settings, answer, chatIdentifier, t]);
 
     const sendMessage = async () => {
         if (!text) {
             return;
         }
-        messages.current = [...messages.current.filter(message => message.type !== 'buttons'), { text: text, issuer: t('chat.issuer.human'), type: 'text', time: moment().locale(i18n.languages[0]).format('YYYY-MM-DD HH:mm:ss') }];
-        try {
-            const response = await axios.post(`${settings.botkit.url}/handle`, { query: text, bot: bot, identifier: chatIdentifier });
-            answer(response.data);
-        } catch (error) {
-            console.warn('abotkit rest api is not available', error);
-            answer([{ text: t('chat.state.offline') }]);
-        } finally {
-            setText('');
-        }
+        messages.current = [...messages.current.filter(message => message.type !== 'buttons'), { text: text, issuer: t('chat.issuer.human'), type: 'text', time: moment().locale(languages[0]).format('YYYY-MM-DD HH:mm:ss') }];
         messagebox.current.scrollTop = messagebox.current.scrollHeight;
+        setText('');
+        setTimeout(async () => {
+            setIsTyping(true);
+            try {
+                const response = await axios.post(`${settings.botkit.url}/handle`, { query: text, bot: bot, identifier: chatIdentifier });
+                answer(response.data);
+            } catch (error) {
+                console.warn('abotkit rest api is not available', error);
+                answer([{ text: t('chat.state.offline') }]);
+            }
+            messagebox.current.scrollTop = messagebox.current.scrollHeight;
+        }, 1000);
     }
 
     const sendPredefinedMessage = async (title, message) => {
-        messages.current = [...messages.current.filter(message => message.type !== 'buttons'), { text: title, issuer: t('chat.issuer.human'), type: 'text', time: moment().locale(i18n.languages[0]).format('YYYY-MM-DD HH:mm:ss') }];
+        messages.current = [...messages.current.filter(message => message.type !== 'buttons'), { text: title, issuer: t('chat.issuer.human'), type: 'text', time: moment().locale(languages[0]).format('YYYY-MM-DD HH:mm:ss') }];
         try {
             const response = await axios.post(`${settings.botkit.url}/handle`, { query: message, bot: bot, identifier: chatIdentifier });
             answer(response.data);
@@ -197,13 +217,13 @@ const Chat = () => {
         messagebox.current.scrollTop = messagebox.current.scrollHeight;
     }
 
-    const content = (<div className={classes.display} style={{height: displaySmartphone ? '100%' : 'calc(100vh - 22px - 64px - 70px - 32px)'}}>
+    const content = (<div className={classes.display} style={{height: displaySmartphone ? '100%' : 'calc(100vh - 60px - 48px)'}}> {/* 100% - header - footer */}
         <div ref={messagebox} className={classes.messages}>
             {messages.current.map((message, i) => {
                 if (message.type === 'text') {
                     return <div key={i} className={`${classes.message} ${message.issuer === bot ? classes.bot : classes.human}`}>
                         <p>{message.text}</p>
-                        <span>{moment().locale(i18n.languages[0]).format('HH:mm')}</span>
+                        <span>{moment().locale(languages[0]).format('HH:mm')}</span>
                     </div>
                 } else if (message.type === 'buttons') {
                     return <div key={i} className={classes.message} style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -215,6 +235,7 @@ const Chat = () => {
                     return null
                 }
             })}
+            <TypingIndicator visible={isTyping} />
         </div>
         <Input
             className={classes.input}
@@ -225,16 +246,13 @@ const Chat = () => {
             suffix={<MessageOutlined onClick={sendMessage} />} />
     </div>)
 
-    return (
-        <>
-            <Breadcrumb style={{ margin: "16px 0" }}>
-                <Breadcrumb.Item>{t("chat.breadcrumbs.home")}</Breadcrumb.Item>
-                <Breadcrumb.Item>{t("chat.breadcrumbs.chat")}</Breadcrumb.Item>
-                <Breadcrumb.Item>{bot}</Breadcrumb.Item>
-            </Breadcrumb>
+    const breadcrumbs = getBreadcrumbs(Pages.CHAT, t, sharedClasses, settings.collapsed && bot, { marginLeft: displaySmartphone ? 0 : 16, marginRight: displaySmartphone ? 0 : 16 });
 
+    return (
+        <div className={displaySmartphone ? sharedClasses.page : {}}>
+            { breadcrumbs }
             { displaySmartphone ? <Smartphone>{ content }</Smartphone> : content }
-        </>
+        </div>
     );
 };
 
