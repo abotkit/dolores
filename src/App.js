@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import { Layout, Spin } from 'antd';
 import Menu from './components/Menu';
-import { Settings, Chat, Actions, Intents, About, BotNotFound, Statistics } from './pages';
+import { Settings, Chat, Actions, Intents, About, Integrations, Statistics, BotNotFound } from './pages';
 import './App.css';
 import { SettingsContext, defaultSettings } from './SettingsContext';
 import Keycloak from 'keycloak-js';
@@ -36,6 +36,7 @@ const Main = () => {
             <Route path={`${path}/actions`} component={Actions} />
             <Route path={`${path}/intents`} component={Intents} />
             <Route path={`${path}/settings`} component={Settings} />
+            <Route path={`${path}/integrations`} component={Integrations} />
             <Route path={`${path}/statistics`} component={Statistics} />
           </Switch> }
         </Content>

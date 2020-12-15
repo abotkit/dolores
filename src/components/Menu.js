@@ -3,7 +3,7 @@ import { Link, withRouter, useParams, useRouteMatch, useHistory } from 'react-ro
 import { Menu } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SettingsContext } from '../SettingsContext';
-import { UserOutlined, MessageOutlined, LineChartOutlined, BulbOutlined, ThunderboltOutlined, KeyOutlined, ToolOutlined } from '@ant-design/icons';
+import { ApiOutlined, UserOutlined, MessageOutlined, LineChartOutlined, BulbOutlined, ThunderboltOutlined, KeyOutlined, ToolOutlined } from '@ant-design/icons';
 
 const { SubMenu } = Menu;
 
@@ -31,10 +31,10 @@ const AbotkitMenu = withRouter(props => {
     const login = () => {
       keycloak.login();
     }
-  
+
     const logout = () => {
       sessionStorage.setItem('maeve-keycloak-token', undefined);
-      sessionStorage.setItem('maeve-keycloak-token-age', undefined); 
+      sessionStorage.setItem('maeve-keycloak-token-age', undefined);
       keycloak.logout();
       history.push(`/${url}/chat`);
     }
@@ -50,10 +50,13 @@ const AbotkitMenu = withRouter(props => {
         <Menu.Item key={`${url}/statistics`} icon={<LineChartOutlined />}>
           <Link to={`${url}/statistics`}>{ t('menu.statistics') }</Link>
         </Menu.Item>,
+        <Menu.Item key={`${url}/integrations`} icon={<ApiOutlined />}>
+          <Link to={`${url}/integrations`}>{t('menu.integrations')}</Link>
+        </Menu.Item>,
         <Menu.Item key={`${url}/settings`} icon={<ToolOutlined />}>
           <Link to={`${url}/settings`}>{ t('menu.settings') }</Link>
         </Menu.Item>,
-        <SubMenu key="sub-menu-user" style={{ float: "right"}} icon={<UserOutlined />} title={keycloak.idTokenParsed.preferred_username}>
+        <SubMenu key="sub-menu-user" style={{ float: "right" }} icon={<UserOutlined />} title={keycloak.idTokenParsed.preferred_username}>
           <Menu.Item key="sub-menu-user-logut" onClick={logout}>Logout</Menu.Item>
         </SubMenu>
       )
@@ -76,6 +79,9 @@ const AbotkitMenu = withRouter(props => {
       <Menu.Item key={`${url}/statistics`} icon={<LineChartOutlined />}>
         <Link to={`${url}/statistics`}>{ t('menu.statistics') }</Link>
       </Menu.Item>,
+      <Menu.Item key={`${url}/integrations`} icon={<ApiOutlined />}>
+        <Link to={`${url}/integrations`}>{t('menu.integrations')}</Link>
+      </Menu.Item>,
       <Menu.Item key={`${url}/settings`} icon={<ToolOutlined />}>
         <Link to={`${url}/settings`}>{ t('menu.settings') }</Link>
       </Menu.Item>
@@ -84,10 +90,10 @@ const AbotkitMenu = withRouter(props => {
 
   return (
     <Menu 
-    theme="dark"
-    style={{ lineHeight: '64px' }}
-    selectedKeys={[location.pathname]}>
-    {items}
+      theme="dark"
+      style={{ lineHeight: '64px' }}
+      selectedKeys={[location.pathname]}>
+      {items}
     </Menu>
   );
 });
