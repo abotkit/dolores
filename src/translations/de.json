@@ -97,36 +97,13 @@
       "back": "Zurück"
     },
     "integrations": {
-      "breadcrumbs": {
-        "home": "Startseite",
-        "integrations": "Integrationen"
-      },
       "loading": {
         "tip": "Integrationen werden geladen..."
       },
-      "delete-confirmation": "Wollen sie diese Integration wirklich löschen?",
-      "delete": "Löschen",
-      "notifications": {
-        "linkToClipboard": "Integrations-Link in Zwischenablage kopiert."
-      },
       "headline": "Integrationen",
-      "add": "Integration hinzufügen",
-      "add-dialog": {
-        "headline": "Integration hinzufügen",
-        "name": "Name",
-        "name-placeholder": "Name der Integration",
-        "integration-snippet": "Integrations-Code",
-        "type": "Typ",
-        "url": "URL",
-        "link": "Link",
-        "url-placeholder": "https://your.url.domain/bot"
-      },
-      "modify-dialog": {
-        "headline": "Integration anpassen",
-        "name": "Name",
-        "name-placeholder": "Name der Integration",
-        "url": "URL",
-        "url-placeholder": "https://your.url.domain/bot"
+      "unavailable": "Aktuell sind für diesen Bot keine Integrationen verfügbar",
+      "request": {
+        "failed": "Die Anfrage ist leider fehlgeschlagen."
       }
     },
     "intents": {
