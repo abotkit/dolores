@@ -104,6 +104,10 @@
       "unavailable": "Aktuell sind für diesen Bot keine Integrationen verfügbar",
       "request": {
         "failed": "Die Anfrage ist leider fehlgeschlagen."
+      },
+      "input": {
+        "copy": "In Zwischenablage kopieren",
+        "copied": "{{message}} wurde in die Zwischenablage kopiert."
       }
     },
     "intents": {
