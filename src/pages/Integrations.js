@@ -32,7 +32,10 @@ const Integrations = () => {
       setLoading(true);
       try {
         const integrations = (await axios.get(`${settings.botkit.url}/integrations`, {
-          cancelToken: source.current.token
+          cancelToken: source.current.token,
+          params: {
+            bot: bot
+          }
         })).data;
   
         setIntegrations(integrations);

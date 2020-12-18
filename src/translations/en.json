@@ -104,6 +104,10 @@
       "unavailable": "Currently there are no supported integrations available for this bot",
       "request": {
         "failed": "The request has unfortunately failed."
+      },
+      "input": {
+        "copy": "Copy to clipboard",
+        "copied": "{{message}} copied to clipboard."
       }
     },
     "intents": {
