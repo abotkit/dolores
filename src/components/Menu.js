@@ -56,7 +56,7 @@ const AbotkitMenu = withRouter(props => {
         <Menu.Item key={`${url}/settings`} icon={<ToolOutlined />}>
           <Link to={`${url}/settings`}>{ t('menu.settings') }</Link>
         </Menu.Item>,
-        <SubMenu key="sub-menu-user" style={{ float: "right" }} icon={<UserOutlined />} title={keycloak.idTokenParsed.preferred_username}>
+        <SubMenu key="sub-menu-user" icon={<UserOutlined />} title={keycloak.idTokenParsed.preferred_username}>
           <Menu.Item key="sub-menu-user-logut" onClick={logout}>Logout</Menu.Item>
         </SubMenu>
       )
@@ -65,7 +65,9 @@ const AbotkitMenu = withRouter(props => {
         <Menu.Item key={`${url}/settings`} icon={<ToolOutlined />}>
           <Link to={`${url}/settings`}>{ t('menu.settings') }</Link>
         </Menu.Item>,
-        <Menu.Item icon={<KeyOutlined />} key="menu-login" onClick={login} style={{ float: "right"}}>Login</Menu.Item>
+        <Menu.Item key="menu-login" onClick={login} icon={<KeyOutlined />}>
+          Login
+        </Menu.Item>
       );
     }
   } else {
