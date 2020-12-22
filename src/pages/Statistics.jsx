@@ -60,7 +60,7 @@ const Statistics = () => {
       title: t('statistics.table.header.time'),
       dataIndex: 'created',
       key: 'created',
-      render: (text, record, index) => (<p>{moment(text, 'YYYY-MM-DD HH:mm:ss').locale(languages[0]).fromNow()}</p>),
+      render: (text, record, index) => (<p>{moment.utc(text, 'YYYY-MM-DD HH:mm:ss').locale(languages[0]).fromNow()}</p>),
       defaultSortOrder: 'descend',
       sorter: (a, b) => (new Date(a.created).getTime()) - (new Date(b.created).getTime()),
       sortDirections: ['descend', 'ascend'],
