@@ -16,6 +16,7 @@ const Integrations = () => {
   const history = useHistory();
   const { t } = useTranslation();
   const [settings] = useContext(SettingsContext);
+  const { botkit: {url} } = settings;
   const [integrations, setIntegrations] = useState([]);
   const [selectedIntegration, setSelectedIntegration] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -26,12 +27,12 @@ const Integrations = () => {
 
   useEffect(() => {
     const axiosSource = source.current;
-    axios.get(`${settings.botkit.url}/bot/${bot}/status`, {
+    axios.get(`${url}/bot/${bot}/status`, {
       cancelToken: axiosSource.token
     }).then(async () => {
       setLoading(true);
       try {
-        const integrations = (await axios.get(`${settings.botkit.url}/integrations`, {
+        const integrations = (await axios.get(`${url}/integrations`, {
           cancelToken: source.current.token,
           params: {
             bot: bot
@@ -57,16 +58,16 @@ const Integrations = () => {
     return () => {
       axiosSource.cancel();
     }
-  }, [history, bot, settings]);
+  }, [history, bot, url]);
 
   const breadcrumbs = getBreadcrumbs(Pages.INTEGRATIONS, t, sharedClasses, settings.collapsed && bot)
 
   if (settings.keycloak.enabled && !settings.keycloak.instance.authenticated) {
     return (
-      <>
+      <div className={sharedClasses.page}>
         { breadcrumbs}
-        <h3>{`Sorry, but you need to login to see the integrations page of ${bot}`}</h3>
-      </>
+        <h3>{t('login.info.pre')}<span onClick={() => settings.keycloak.instance.login()} className={sharedClasses.link}>{t('login.info.link')}</span>{t('login.info.post', {bot: bot, page: t('breadcrumbs.integrations')})}</h3>
+      </div>
     );
   }
 

@@ -7,6 +7,10 @@ const useStyles = createUseStyles({
   breadcrumbs: {
     marginTop: 19,
     marginBottom: 19 
+  },
+  link: {
+    cursor: 'pointer',
+    color: '#1890ff'
   }
 });
 

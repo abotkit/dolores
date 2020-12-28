@@ -110,10 +110,12 @@ const Chat = () => {
     const [text, setText] = useState('');
     const { bot } = useParams();
     const history = useHistory();
-    const [, updateState] = React.useState();
-    const forceUpdate = React.useCallback(() => updateState({}), []);
+    const [firstVisit, setFirstVisit] = useState(true);
+    const [, updateState] = useState();
+    const forceUpdate = useCallback(() => updateState({}), []);
     const messages = useRef([]);
     const [settings] = useContext(SettingsContext);
+    const { botkit: {url} } = settings;
     const [chatIdentifier] = useState(uuidv4());
     const [isTyping, setIsTyping] = useState(false);
 
@@ -165,25 +167,28 @@ const Chat = () => {
     }, [handleWindowSizeChange]);
 
     useEffect(() => {
-        axios.get(`${settings.botkit.url}/bot/${bot}/status`).then(async () => {
-            setIsTyping(true);
-            try {
-                const response = await axios.post(`${settings.botkit.url}/handle`, { query: 'What can you do for me?', bot: bot, identifier: chatIdentifier });
-                await answer(response.data);
-            } catch (error) {
-                console.warn('abotkit rest api is not available', error);
-                answer([{ text: t('chat.state.offline') }]);                
-            } finally {
-                setIsTyping(false);
-            }
-        }).catch(error => {
-            if (typeof error.response !== 'undefined' && error.response.status === 404) {
-                history.push('/not-found');
-            } else {
-                console.warn('abotkit rest api is not available', error);
-            }
-        });
-    }, [history, bot, settings, answer, chatIdentifier, t]);
+        if (firstVisit) {
+            axios.get(`${url}/bot/${bot}/status`).then(async () => {
+                setIsTyping(true);
+                try {
+                    const response = await axios.post(`${url}/handle`, { query: 'What can you do for me?', bot: bot, identifier: chatIdentifier });
+                    await answer(response.data);
+                } catch (error) {
+                    console.warn('abotkit rest api is not available', error);
+                    answer([{ text: t('chat.state.offline') }]);                
+                } finally {
+                    setIsTyping(false);
+                }
+            }).catch(error => {
+                if (typeof error.response !== 'undefined' && error.response.status === 404) {
+                    history.push('/not-found');
+                } else {
+                    console.warn('abotkit rest api is not available', error);
+                }
+            });
+            setFirstVisit(false);
+        }
+    }, [history, bot, url, answer, chatIdentifier, t, firstVisit]);
 
     const sendMessage = async () => {
         if (!text) {

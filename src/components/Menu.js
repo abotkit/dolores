@@ -33,8 +33,8 @@ const AbotkitMenu = withRouter(props => {
     }
 
     const logout = () => {
-      sessionStorage.setItem('maeve-keycloak-token', undefined);
-      sessionStorage.setItem('maeve-keycloak-token-age', undefined);
+      localStorage.removeItem('dolores-keycloak-token');
+      localStorage.removeItem('dolores-keycloak-expiration');
       keycloak.logout();
       history.push(`/${url}/chat`);
     }
@@ -56,7 +56,7 @@ const AbotkitMenu = withRouter(props => {
         <Menu.Item key={`${url}/settings`} icon={<ToolOutlined />}>
           <Link to={`${url}/settings`}>{ t('menu.settings') }</Link>
         </Menu.Item>,
-        <SubMenu key="sub-menu-user" icon={<UserOutlined />} title={keycloak.idTokenParsed.preferred_username}>
+        <SubMenu key="sub-menu-user" icon={<UserOutlined />} title={keycloak.tokenParsed.preferred_username}>
           <Menu.Item key="sub-menu-user-logut" onClick={logout}>Logout</Menu.Item>
         </SubMenu>
       )

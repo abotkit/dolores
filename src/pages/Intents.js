@@ -59,6 +59,7 @@ const Intents = () => {
   const history = useHistory();
   const { t } = useTranslation();
   const [settings] = useContext(SettingsContext);
+  const { botkit: {url} } = settings;
 
   const [intents, setIntents] = useState([]);
   const [intentName, setIntentName] = useState('');
@@ -84,14 +85,14 @@ const Intents = () => {
       setLoading(true);
     }
     try {
-      const intents = (await axios.get(`${settings.botkit.url}/bot/${bot}/intents`, {
+      const intents = (await axios.get(`${url}/bot/${bot}/intents`, {
         cancelToken: source.current.token
       })).data;
-      const phrases = (await axios.get(`${settings.botkit.url}/bot/${bot}/phrases`, {
+      const phrases = (await axios.get(`${url}/bot/${bot}/phrases`, {
         cancelToken: source.current.token
       })).data;
       for (const intent of intents) {
-        intent.examples = (await axios.get(`${settings.botkit.url}/intent/${encodeURIComponent(intent.name)}/bot/${bot}/examples`,{
+        intent.examples = (await axios.get(`${url}/intent/${encodeURIComponent(intent.name)}/bot/${bot}/examples`,{
           cancelToken: source.current.token
         })).data;
       }
@@ -108,7 +109,7 @@ const Intents = () => {
     } finally {
       setLoading(false);
     }
-  }, [bot, settings]);
+  }, [bot, url]);
 
   const selectAction = (intent, action) => {
     const updates = [...selectedActions];
@@ -119,7 +120,7 @@ const Intents = () => {
 
   useEffect(() => {
     const axiosSource = source.current;
-    axios.get(`${settings.botkit.url}/bot/${bot}/actions`, {
+    axios.get(`${url}/bot/${bot}/actions`, {
       cancelToken: axiosSource.token
     }).then(response => {
       const availableActions = response.data;
@@ -137,11 +138,11 @@ const Intents = () => {
     return () => {
       axiosSource.cancel();
     }
-  }, [bot, settings]);
+  }, [bot, url]);
 
   useEffect(() => {
     const axiosSource = source.current;
-    axios.get(`${settings.botkit.url}/bot/${bot}/status`, {
+    axios.get(`${url}/bot/${bot}/status`, {
       cancelToken: axiosSource.token
     }).then(() => {
       fetchIntents(true);
@@ -156,16 +157,16 @@ const Intents = () => {
     return () => {
       axiosSource.cancel();
     }
-  }, [fetchIntents, history, bot, settings]);
+  }, [fetchIntents, history, bot, url]);
 
   const breadcrumbs = getBreadcrumbs(Pages.INTENTS, t, sharedClasses, settings.collapsed && bot)
 
   if (settings.keycloak.enabled && !settings.keycloak.instance.authenticated) {
     return (
-      <>
+      <div className={sharedClasses.page}>
         { breadcrumbs }
-        <h3>{`Sorry, but you need to login to see the intent page of ${bot}`}</h3>
-      </>
+        <h3>{t('login.info.pre')}<span onClick={() => settings.keycloak.instance.login()} className={sharedClasses.link}>{t('login.info.link')}</span>{t('login.info.post', {bot: bot, page: t('breadcrumbs.intents')})}</h3>
+      </div>
     );
   }
 

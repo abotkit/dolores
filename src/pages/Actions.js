@@ -14,16 +14,17 @@ const Actions = () => {
   const history = useHistory();
   const { t } = useTranslation();
   const [settings] = useContext(SettingsContext);
+  const { botkit: {url} } = settings;
   const sharedClasses = useCommonStyles();
   const CancelToken = useRef(Axios.CancelToken);
   const source = useRef(CancelToken.current.source());
 
   useEffect(() => {
     const axiosSource = source.current;
-    axios.get(`${settings.botkit.url}/bot/${bot}/status`, {
+    axios.get(`${url}/bot/${bot}/status`, {
       cancelToken: axiosSource.token
     }).then(() => {
-      axios.get(`${settings.botkit.url}/bot/${bot}/actions`, {
+      axios.get(`${url}/bot/${bot}/actions`, {
         cancelToken: axiosSource.token
       }).then(response => {
         setActions(response.data);
@@ -43,16 +44,16 @@ const Actions = () => {
     return () => {
       axiosSource.cancel();
     }
-  }, [bot, history, settings]);
+  }, [bot, history, url]);
 
   const breadcrumbs = getBreadcrumbs(Pages.ACTIONS, t, sharedClasses, settings.collapsed && bot)
 
   if (settings.keycloak.enabled && !settings.keycloak.instance.authenticated) {
     return (
-      <>
+      <div className={sharedClasses.page}>
         { breadcrumbs }
-        <h3>{`Sorry, but you need to login to see the actions page of ${bot}`}</h3>
-      </>
+        <h3>{t('login.info.pre')}<span onClick={() => settings.keycloak.instance.login()} className={sharedClasses.link}>{t('login.info.link')}</span>{t('login.info.post', {bot: bot, page: t('breadcrumbs.actions')})}</h3>
+      </div>
     );
   }
 

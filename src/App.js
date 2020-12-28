@@ -58,22 +58,19 @@ const App = () => {
           clientId: settings.keycloak.clientId,
         });
 
-        keycloak.init().then(authenticated => {
-          const restoredToken = sessionStorage.getItem('maeve-keycloak-token');
-          const restoredTokenAge = sessionStorage.getItem('maeve-keycloak-token-age');
-          const now = new Date().getTime();
+        const restoredToken = localStorage.getItem('dolores-keycloak-token');
+        const restoredRefreshToken = localStorage.getItem('dolores-keycloak-refresh-token');
 
-          if (!authenticated) {
-            if (typeof restoredToken !== 'undefined' && typeof restoredTokenAge !== 'undefined' && now < restoredTokenAge + (15 * 1000 * 60)) {
-              console.log('Found access token in session storage which is already ok. start login');
-              keycloak.login();
-            } else {
-              console.log('There was no session token in session store or its time was up');
-              sessionStorage.setItem('maeve-keycloak-token', undefined);
-              sessionStorage.setItem('maeve-keycloak-token-age', undefined);            
-            }
+        keycloak.init({token: restoredToken, refreshToken: restoredRefreshToken}).then(authenticated => {
+          if (authenticated) {
+            localStorage.setItem('dolores-keycloak-token', keycloak.token);
+            localStorage.setItem('dolores-keycloak-refresh-token', keycloak.refreshToken);
+            localStorage.setItem('dolores-keycloak-expiration', keycloak.tokenParsed.exp);
+          } else {
+            localStorage.removeItem('dolores-keycloak-token');
+            localStorage.removeItem('dolores-keycloak-expiration');
+            localStorage.removeItem('dolores-keycloak-refresh-token');             
           }
-
           updateSettings(prevSettings => ({...prevSettings, keycloak: {...prevSettings.keycloak, instance: keycloak}}));
         }).catch(error => {
           console.warn(error);
@@ -85,27 +82,46 @@ const App = () => {
 
         keycloak.onReady = () => {
           if (keycloak.authenticated) {
-            window.authorizationToken = keycloak.token;
+            localStorage.setItem('dolores-keycloak-token', keycloak.token);
+            localStorage.setItem('dolores-keycloak-refresh-token', keycloak.refreshToken);
+            localStorage.setItem('dolores-keycloak-expiration', keycloak.tokenParsed.exp);
           } else {
-            window.authorizationToken = undefined;
+            const restoredToken = localStorage.getItem('dolores-keycloak-token');
+            const restoredTokenAge = localStorage.getItem('dolores-keycloak-token-age');
+            const now = new Date().getTime();
+
+            if (typeof restoredToken !== 'undefined' && typeof restoredTokenAge !== 'undefined' && now < restoredTokenAge + (15 * 1000 * 60)) {
+              console.log('Found access token in local storage which is already ok');
+            } else {
+              console.log('There was no token in local storage or its time was up');
+              localStorage.removeItem('dolores-keycloak-token');
+              localStorage.removeItem('dolores-keycloak-expiration');
+              localStorage.removeItem('dolores-keycloak-refresh-token');      
+            }
+
           }
         }
 
         keycloak.onAuthSuccess = () => {
           if (keycloak.authenticated) {
-            window.authorizationToken = keycloak.token;
-            sessionStorage.setItem('maeve-keycloak-token', keycloak.token);
-            sessionStorage.setItem('maeve-keycloak-token-age', new Date().getTime());
+            localStorage.setItem('dolores-keycloak-token', keycloak.token);
+            localStorage.setItem('dolores-keycloak-refresh-token', keycloak.refreshToken);
+            localStorage.setItem('dolores-keycloak-expiration', keycloak.tokenParsed.exp);
           } else {
-            window.authorizationToken = undefined;
+            localStorage.removeItem('dolores-keycloak-token');
+            localStorage.removeItem('dolores-keycloak-expiration');
+            localStorage.removeItem('dolores-keycloak-refresh-token');
           }
         }
 
         keycloak.onTokenExpired = () => {
           keycloak.updateToken(5).then(() => {
             console.log('keycloak token refreshed');
-            sessionStorage.setItem('maeve-keycloak-token', keycloak.token);
-            sessionStorage.setItem('maeve-keycloak-token-age', new Date().getTime());
+            localStorage.setItem('dolores-keycloak-token', keycloak.token);
+            localStorage.setItem('dolores-keycloak-refresh-token', keycloak.refreshToken);
+            localStorage.setItem('dolores-keycloak-expiration', keycloak.tokenParsed.exp);
+          }).catch(error => {
+            console.error(error);
           })
         }
       } 

@@ -96,6 +96,13 @@
       "text": "This isn't the droid you're looking for",
       "back": "Go back"
     },
+    "login": {
+      "info": {
+        "pre": "Sorry, but you need to ",
+        "link": "login",
+        "post": " to see the {{page}} page of {{bot}}."
+      }
+    },
     "integrations": {
       "loading": {
         "tip": "Loading integrations..."
