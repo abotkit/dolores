@@ -96,6 +96,13 @@
       "text": "Das ist nicht der Druide den Ihr sucht",
       "back": "Zurück"
     },
+    "login": {
+      "info": {
+        "pre": "Du musst dich zuerst ",
+        "link": "einloggen",
+        "post": ", um die {{page}}-Seite von {{bot}} sehen zu können."
+      }
+    },
     "integrations": {
       "loading": {
         "tip": "Integrationen werden geladen..."

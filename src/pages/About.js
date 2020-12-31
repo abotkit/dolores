@@ -41,9 +41,11 @@ const About = () => {
   const CancelToken = useRef(Axios.CancelToken);
   const source = useRef(CancelToken.current.source());
 
+  const { botkit: {url} } = settings;
+
   useEffect(() => {
     const axiosSource = source.current;
-    axios.get(`${settings.botkit.url}/bots`, { cancelToken: axiosSource.token }).then(response => {
+    axios.get(`${url}/bots`, { cancelToken: axiosSource.token }).then(response => {
       setBots(response.data);
     }).catch(error => {
       if (!Axios.isCancel(error)) {
@@ -54,7 +56,7 @@ const About = () => {
     return () => {
       axiosSource.cancel();
     }
-  }, [settings]);
+  }, [url]);
 
   const visit = bot => {
     history.push(`/${bot}/chat`);

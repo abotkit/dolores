@@ -30,6 +30,7 @@ const Settings = () => {
   const classes = useStyles();
   const sharedClasses = useCommonStyles();
   const [settings] = useContext(SettingsContext);
+  const { botkit: {url} } = settings;
 
   const [language, setLanguage] = useState(i18n.languages[0].substring(0,2).toLocaleLowerCase());
   
@@ -59,11 +60,11 @@ const Settings = () => {
 
   useEffect(() => {
     const axiosSource = source.current;
-    axios.get(`${settings.botkit.url}/bot/${bot}/status`, {
+    axios.get(`${url}/bot/${bot}/status`, {
       cancelToken: axiosSource.token
     }).then(response => {
       setbotAlive(true);
-      axios.get(`${settings.botkit.url}/bot/${bot}/settings`, {
+      axios.get(`${url}/bot/${bot}/settings`, {
         cancelToken: axiosSource.token
       }).then(response => {
         const { host, port, type, language } = response.data;
@@ -87,7 +88,7 @@ const Settings = () => {
     return () => {
       axiosSource.cancel();
     }
-  }, [bot, history, settings]);
+  }, [bot, history, url]);
 
   const breadcrumbs = getBreadcrumbs(Pages.SETTINGS, t, sharedClasses, settings.collapsed && bot);
 
