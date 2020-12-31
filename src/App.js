@@ -25,7 +25,7 @@ const Main = () => {
         }}>
         <div className="logo" style={{
           justifyContent: settings.collapsed ? 'center' : 'flex-start'
-        }}><span />{ !settings.collapsed && "robert" }</div>
+        }}><div style={{ backgroundImage: 'url(/logo48.png)' }} /><span />{ !settings.collapsed && "robert" }</div>
         <Menu />
       </Sider>
       <Layout>
