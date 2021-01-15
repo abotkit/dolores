@@ -28,6 +28,19 @@ const useStyles = createUseStyles({
     '& > p': {
       textAlign: 'justify'
     }
+  },
+  logo: {
+    display: 'flex',
+    justifyContent: 'center',
+    '& > div': {
+      height: 48,
+      width: 48,
+      backgroundSize: '75%',
+      backgroundPosition: 'center',
+      marginTop: 8,
+      marginRight: 4,
+      backgroundRepeat: 'no-repeat'
+    }
   }
 })
 
@@ -65,8 +78,7 @@ const About = () => {
   return(
     <>
       <Header>
-        <div className="logo" />
-        <h3 className={ classes.title }>Abotkit</h3>
+        <div className={classes.logo}><div style={{ backgroundImage: 'url(/logo.svg)' }} /><h3 className={ classes.title }>Abotkit</h3></div>
       </Header>
       <Content className={classes.content}>
         <h3 className={ classes.headline }>{ t('about.start.headline') }</h3>
@@ -88,7 +100,7 @@ const About = () => {
         <h3 className={ classes.headline }>{ t('about.contribute.headline') }</h3>
         <p>{ t('about.contribute.text') } <a href="https://github.com/abotkit/abotkit">{ t('about.contribute.link') }</a></p>
       </Content>
-      <Footer style={{ textAlign: 'center' }}>abotkit ©2020</Footer>
+      <Footer style={{ textAlign: 'center' }}>abotkit ©2021</Footer>
     </>
   );
 }

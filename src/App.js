@@ -3,6 +3,7 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import { Layout, Spin } from 'antd';
 import Menu from './components/Menu';
 import { Settings, Chat, Actions, Intents, About, Integrations, Statistics, BotNotFound } from './pages';
+import './Theme.less';
 import './App.css';
 import { SettingsContext, defaultSettings } from './SettingsContext';
 import Keycloak from 'keycloak-js';
@@ -25,7 +26,7 @@ const Main = () => {
         }}>
         <div className="logo" style={{
           justifyContent: settings.collapsed ? 'center' : 'flex-start'
-        }}><div style={{ backgroundImage: 'url(/logo48.png)' }} /><span />{ !settings.collapsed && "robert" }</div>
+        }}><div style={{ backgroundImage: 'url(/logo.svg)' }} /><span />{ !settings.collapsed && "robert" }</div>
         <Menu />
       </Sider>
       <Layout>
@@ -40,7 +41,7 @@ const Main = () => {
             <Route path={`${path}/statistics`} component={Statistics} />
           </Switch> }
         </Content>
-        <Footer style={{ textAlign: 'center' }}>abotkit ©2020</Footer>
+        <Footer style={{ textAlign: 'center' }}>abotkit ©2021</Footer>
       </Layout>
     </>
   );
