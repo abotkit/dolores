@@ -19,7 +19,7 @@ const useStyle = createUseStyles({
     display: {
         display: 'flex',
         flexDirection: 'column',
-        backgroundImage: 'url("/assets/snow-mountain.jpg")',
+        backgroundImage: 'url("/assets/teal-ocean.jpg")',
         backgroundSize: 'cover'
     },
     messages: {
@@ -78,7 +78,7 @@ const useStyle = createUseStyles({
     bot: {
         alignSelf: 'flex-end',
         borderTopRightRadius: 0,
-        background: '#d6eef3',
+        background: 'rgba(255,255,255,0.8)',
         '&:after': {
             content: '""',
             position: 'absolute',
@@ -89,7 +89,7 @@ const useStyle = createUseStyles({
             border: '8px solid transparent',
             borderRight: 0,
             borderTop: 0,
-            borderLeftColor: '#d6eef3',
+            borderLeftColor: 'rgba(255,255,255,0.8)',
             marginRight: -8
         }
     },
